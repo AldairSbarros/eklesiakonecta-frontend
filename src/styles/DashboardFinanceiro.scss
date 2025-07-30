@@ -1,0 +1,117 @@
+.dashboard-financeiro-container {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 2rem;
+  max-width: 900px;
+  margin: 2rem auto;
+}
+.dashboard-financeiro-container h2 {
+  margin-bottom: 1.5rem;
+  color: #2d3e50;
+  font-size: 1.4rem;
+  text-align: center;
+}
+.dashboard-filtros {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+.dashboard-filtros .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.dashboard-filtros label {
+  font-weight: 500;
+  color: #444;
+}
+.dashboard-filtros select,
+.dashboard-filtros input {
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+.btn-buscar-resumo {
+  background: #2d8cff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-buscar-resumo:hover:not(:disabled) {
+  background: #1a6ed8;
+}
+.erro-message {
+  color: #c0392b;
+  background: #ffeaea;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.98rem;
+}
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.2rem;
+  margin: 2rem 0 1.5rem 0;
+}
+.card {
+  background: #f5f6fa;
+  border-radius: 8px;
+  padding: 1.2rem 1rem;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.card h3 {
+  font-size: 1.08rem;
+  color: #444;
+  margin-bottom: 0.5rem;
+}
+.card span {
+  font-size: 1.18rem;
+  font-weight: 600;
+  color: #2d3e50;
+}
+.card-entradas { border-left: 5px solid #229954; }
+.card-saidas { border-left: 5px solid #c0392b; }
+.card-saldo { border-left: 5px solid #2d8cff; }
+.card-ofertas { border-left: 5px solid #f39c12; }
+.card-receitas { border-left: 5px solid #27ae60; }
+.card-despesas { border-left: 5px solid #c0392b; }
+.card-investimentos { border-left: 5px solid #6c47ff; }
+.dashboard-categorias {
+  display: flex;
+  gap: 2.5rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+.categoria-list {
+  background: #f5f6fa;
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  min-width: 220px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.categoria-list h4 {
+  margin-bottom: 0.7rem;
+  color: #444;
+  font-size: 1.05rem;
+}
+.categoria-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.categoria-list li {
+  font-size: 0.98rem;
+  color: #2d3e50;
+  margin-bottom: 0.3rem;
+}

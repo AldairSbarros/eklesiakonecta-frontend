@@ -1,0 +1,140 @@
+.despesa-cadastro-container {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 2rem 2.5rem;
+  max-width: 700px;
+  margin: 2rem auto;
+  h2 {
+    text-align: center;
+    margin-bottom: 1.1rem;
+    color: #2d3a4b;
+  }
+  .despesa-dica {
+    color: #4f8cff;
+    background: #f0f7ff;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 1.01rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+}
+.despesa-cadastro-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  .despesa-row {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    margin-bottom: 0.5rem;
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      label {
+        font-weight: 500;
+        margin-bottom: 0.4rem;
+        color: #2d3a4b;
+      }
+      input {
+        padding: 0.7rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border 0.2s;
+        &:focus {
+          border-color: #4f8cff;
+          outline: none;
+        }
+      }
+    }
+    .btn-remove {
+      background: #fff0f0;
+      color: #d32f2f;
+      border: none;
+      border-radius: 6px;
+      padding: 0.7rem 0.9rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin-left: 0.2rem;
+      transition: background 0.2s;
+      &:hover:not(:disabled) {
+        background: #ffd6d6;
+      }
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+  .btn-add {
+    background: #4f8cff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.7rem 1.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.2s;
+    &:hover:not(:disabled) {
+      background: #2563eb;
+    }
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+  .erro-message {
+    color: #d32f2f;
+    background: #fff0f0;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    font-size: 0.98rem;
+    text-align: center;
+    margin-top: 0.2rem;
+  }
+  .sucesso-message {
+    color: #388e3c;
+    background: #e8f5e9;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    font-size: 0.98rem;
+    text-align: center;
+    margin-top: 0.2rem;
+  }
+  .btn-cadastrar-despesa {
+    background: #4f8cff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.8rem 0;
+    font-size: 1.08rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 0.2s;
+    &:hover:not(:disabled) {
+      background: #2563eb;
+    }
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+  @media (max-width: 800px) {
+    .despesa-row {
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: stretch;
+    }
+  }
+}

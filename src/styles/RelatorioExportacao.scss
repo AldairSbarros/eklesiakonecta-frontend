@@ -1,0 +1,139 @@
+.relatorio-exportacao-container {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 2rem;
+  max-width: 500px;
+  margin: 2rem auto;
+}
+.relatorio-exportacao-container h2 {
+  margin-bottom: 1.5rem;
+  color: #2d3e50;
+  font-size: 1.4rem;
+  text-align: center;
+}
+.relatorio-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.form-group label {
+  font-weight: 500;
+  color: #444;
+}
+.form-group select,
+.form-group input[type="number"] {
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+.botoes-exportacao {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+.botoes-exportacao button {
+  background: #2d8cff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.botoes-exportacao button:disabled {
+  background: #b3d1ff;
+  cursor: not-allowed;
+}
+.botoes-exportacao button:hover:not(:disabled) {
+  background: #1a6ed8;
+}
+.erro-message {
+  color: #c0392b;
+  background: #ffeaea;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.98rem;
+}
+.btn-export-excel {
+  background: #229954;
+}
+.btn-export-excel:hover:not(:disabled) {
+  background: #1e8449;
+}
+.btn-export-pdf {
+  background: #c0392b;
+}
+.btn-export-pdf:hover:not(:disabled) {
+  background: #922b21;
+}
+
+.btn-export-whatsapp {
+  background: #25d366;
+  color: #fff;
+}
+.btn-export-whatsapp:hover:not(:disabled) {
+  background: #128c7e;
+}
+
+.btn-export-twilio {
+  background: #6c47ff;
+  color: #fff;
+}
+.btn-export-twilio:hover:not(:disabled) {
+  background: #4b2bbd;
+}
+
+.whatsapp-link-msg {
+  margin-top: 1rem;
+  text-align: center;
+}
+.whatsapp-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #25d366;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.whatsapp-link-btn:hover {
+  background: #128c7e;
+}
+.sucesso-message {
+  color: #229954;
+  background: #eafaf1;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.98rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.spin {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}

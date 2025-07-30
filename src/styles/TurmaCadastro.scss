@@ -1,0 +1,99 @@
+.turma-cadastro-container {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 2rem;
+  max-width: 600px;
+  margin: 2rem auto 1.5rem auto;
+}
+.turma-cadastro-form .form-group {
+  margin-bottom: 1.2rem;
+}
+.turma-cadastro-form label {
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+.turma-cadastro-form input,
+.turma-cadastro-form textarea {
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  font-size: 1rem;
+  background: #f9fafb;
+  transition: border 0.2s;
+}
+.turma-cadastro-form input:focus,
+.turma-cadastro-form textarea:focus {
+  border: 1.5px solid #667eea;
+  outline: none;
+}
+.btn-cadastrar-turma {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.7rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s;
+}
+.btn-cadastrar-turma:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.sucesso-message {
+  color: #256029;
+  background: #e6f4ea;
+  border: 1px solid #b7e4c7;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.erro-message {
+  color: #b91c1c;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.turmas-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin-top: 1rem;
+}
+.turmas-table th, .turmas-table td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid #f1f1f1;
+  text-align: left;
+}
+.turmas-table th {
+  background: #f7fafc;
+  font-weight: 600;
+  color: #222;
+}
+.turmas-table tr:last-child td {
+  border-bottom: none;
+}
+.loading {
+  text-align: center;
+  color: #667eea;
+  font-weight: 500;
+  margin: 1.5rem 0;
+}

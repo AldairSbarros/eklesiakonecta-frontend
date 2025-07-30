@@ -1,0 +1,162 @@
+.fatura-cadastro-container {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 2rem;
+  max-width: 600px;
+  margin: 2rem auto;
+}
+.fatura-cadastro-container h2 {
+  margin-bottom: 1.5rem;
+  color: #2d3e50;
+  font-size: 1.4rem;
+  text-align: center;
+}
+.fatura-cadastro-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.form-group label {
+  font-weight: 500;
+  color: #444;
+}
+.form-group input,
+.form-group select {
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+.btn-cadastrar-fatura {
+  background: #2d8cff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 1rem;
+}
+.btn-cadastrar-fatura:hover:not(:disabled) {
+  background: #1a6ed8;
+}
+.btn-cancelar-edicao {
+  background: #aaa;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-left: 1rem;
+}
+.btn-cancelar-edicao:hover:not(:disabled) {
+  background: #888;
+}
+.erro-message {
+  color: #c0392b;
+  background: #ffeaea;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.98rem;
+}
+.sucesso-message {
+  color: #229954;
+  background: #eafaf1;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.98rem;
+}
+.loading {
+  text-align: center;
+  color: #888;
+  margin: 1rem 0;
+}
+.fatura-filtros-totais {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  gap: 1.5rem;
+}
+.filtros-status label {
+  font-weight: 500;
+  margin-right: 0.5rem;
+}
+.filtros-status select {
+  padding: 0.4rem 0.8rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+.totais-status {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+.total-status {
+  font-size: 0.98rem;
+  background: #f5f6fa;
+  border-radius: 4px;
+  padding: 0.3rem 0.8rem;
+  font-weight: 500;
+}
+.total-pendente { color: #f39c12; }
+.total-paga { color: #229954; }
+.total-atrasada { color: #c0392b; }
+.total-cancelada { color: #888; }
+.fatura-atrasada {
+  background: #fff0f0 !important;
+  color: #c0392b;
+  font-weight: 600;
+}
+.faturas-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+}
+.faturas-table th, .faturas-table td {
+  border: 1px solid #eee;
+  padding: 0.7rem 0.5rem;
+  text-align: left;
+}
+.faturas-table th {
+  background: #f5f6fa;
+  color: #2d3e50;
+}
+.btn-acao-editar {
+  background: #229954;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.9rem;
+  margin-right: 0.5rem;
+  cursor: pointer;
+  font-size: 0.98rem;
+}
+.btn-acao-editar:hover:not(:disabled) {
+  background: #1e8449;
+}
+.btn-acao-excluir {
+  background: #c0392b;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  font-size: 0.98rem;
+}
+.btn-acao-excluir:hover:not(:disabled) {
+  background: #922b21;
+}

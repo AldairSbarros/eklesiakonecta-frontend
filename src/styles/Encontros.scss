@@ -1,0 +1,50 @@
+.encontros-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+.encontros-page h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.encontros-page hr {
+  margin: 2rem 0 1.5rem 0;
+  border: none;
+  border-top: 1px solid #e5e7eb;
+}
+.encontros-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin-top: 1rem;
+}
+.encontros-table th, .encontros-table td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid #f1f1f1;
+  text-align: left;
+}
+.encontros-table th {
+  background: #f7fafc;
+  font-weight: 600;
+  color: #222;
+}
+.encontros-table tr:last-child td {
+  border-bottom: none;
+}
+.loading {
+  text-align: center;
+  color: #2563eb;
+  font-weight: 500;
+  margin: 1.5rem 0;
+}
+.erro-message {
+  color: #b91c1c;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.7rem;
+  display: inline-block;
+}

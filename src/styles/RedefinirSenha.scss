@@ -1,0 +1,55 @@
+.redefinir-senha-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+}
+.redefinir-form {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px #ff9a9e22;
+  padding: 2.5rem 2rem;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  animation: fadeIn 0.7s;
+}
+.redefinir-form h2 {
+  color: #ff4b6e;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.redefinir-form input {
+  border: 1px solid #ff4b6e;
+  border-radius: 6px;
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+}
+.redefinir-form button {
+  background: #ff4b6e;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 1.2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.redefinir-form button:disabled {
+  background: #ff9a9e;
+  cursor: not-allowed;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}

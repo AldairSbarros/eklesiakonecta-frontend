@@ -1,0 +1,76 @@
+.encontro-cadastro-container {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 2rem;
+  max-width: 500px;
+  margin: 2rem auto 1.5rem auto;
+}
+.encontro-cadastro-form .form-group {
+  margin-bottom: 1.2rem;
+}
+.encontro-cadastro-form .form-row {
+  display: flex;
+  gap: 1rem;
+}
+.encontro-cadastro-form label {
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+.encontro-cadastro-form input,
+.encontro-cadastro-form textarea {
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  font-size: 1rem;
+  background: #f9fafb;
+  transition: border 0.2s;
+}
+.encontro-cadastro-form input:focus,
+.encontro-cadastro-form textarea:focus {
+  border: 1.5px solid #2563eb;
+  outline: none;
+}
+.btn-cadastrar-encontro {
+  background: linear-gradient(90deg, #f7971e 0%, #ffd200 100%);
+  color: #222;
+  border: none;
+  border-radius: 5px;
+  padding: 0.7rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s;
+}
+.btn-cadastrar-encontro:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.sucesso-message {
+  color: #256029;
+  background: #e6f4ea;
+  border: 1px solid #b7e4c7;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.erro-message {
+  color: #b91c1c;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

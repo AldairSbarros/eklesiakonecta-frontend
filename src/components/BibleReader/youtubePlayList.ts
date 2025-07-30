@@ -1,0 +1,19 @@
+export const mateusPlayList = [
+  "videoId1", "videoId2", "videoId3", // ...
+];
+export const marcosPlayList = [
+  "videoId1", "videoId2", // ...
+];
+export const lucasPlayList = [
+  "videoId1", "videoId2", // ...
+];
+export const joaoPlayList = [
+  "videoId1", "videoId2", // ...
+];
+export const aliancaPlayList = [
+  "videoId1", // ...
+];
+export const aliancaPlayList1 = [
+  "videoId1", // ...
+];
+// Substitua "videoIdX" pelos IDs reais dos vídeos de cada capítulo

@@ -1,0 +1,96 @@
+.discipulando-cadastro-container {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 2rem 2.5rem;
+  max-width: 480px;
+  margin: 2rem auto;
+  h2 {
+    text-align: center;
+    margin-bottom: 1.1rem;
+    color: #2d3a4b;
+  }
+}
+.discipulando-cadastro-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    label {
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+      color: #2d3a4b;
+    }
+    input {
+      padding: 0.7rem 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border 0.2s;
+      &:focus {
+        border-color: #4f8cff;
+        outline: none;
+      }
+    }
+  }
+  .form-row {
+    display: flex;
+    gap: 1rem;
+    .form-group {
+      flex: 1;
+    }
+    @media (max-width: 600px) {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  }
+  .erro-message {
+    color: #d32f2f;
+    background: #fff0f0;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    font-size: 0.98rem;
+    text-align: center;
+    margin-top: 0.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .sucesso-message {
+    color: #388e3c;
+    background: #e8f5e9;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    font-size: 0.98rem;
+    text-align: center;
+    margin-top: 0.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .btn-cadastrar-discipulando {
+    background: #4f8cff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.8rem 0;
+    font-size: 1.08rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    &:hover:not(:disabled) {
+      background: #2563eb;
+    }
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+}
