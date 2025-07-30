@@ -1,3 +1,4 @@
+// cSpell:disable
 import { Link } from 'react-router-dom';
 import EklesiaLogo from '../assets/EklesiaKonecta.png';
 import './Header.scss';

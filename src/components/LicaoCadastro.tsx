@@ -15,6 +15,7 @@ interface Modulo {
   nome: string;
 }
 
+const LicaoCadastro: React.FC = () => {
   const [licoes, setLicoes] = useState<Licao[]>([]);
   const [modulos, setModulos] = useState<Modulo[]>([]);
   const [form, setForm] = useState({ nome: '', descricao: '', moduloId: '' });
@@ -33,7 +34,9 @@ interface Modulo {
       });
       const data = await response.json();
       if (response.ok) setModulos(Array.isArray(data) ? data : []);
-    } catch {}
+    } catch (error) {
+      console.error('Erro ao buscar módulos:', error);
+    }
   };
 
   const fetchLicoes = async () => {
@@ -214,7 +217,7 @@ interface Modulo {
           {loading ? 'Salvando...' : (editId ? 'Salvar Edição' : 'Cadastrar')}
         </button>
         {editId && (
-          <button type="button" className="btn-cancelar-edicao" onClick={() => { setEditId(null); setForm({ nome: '', descricao: '' }); setErro(''); setSucesso(false); }} disabled={loading}>
+          <button type="button" className="btn-cancelar-edicao" onClick={() => { setEditId(null); setForm({ nome: '', descricao: '', moduloId: '' }); setErro(''); setSucesso(false); }} disabled={loading}>
             Cancelar Edição
           </button>
         )}
@@ -254,4 +257,6 @@ interface Modulo {
       )}
     </div>
   );
-}
+};
+
+export default LicaoCadastro;

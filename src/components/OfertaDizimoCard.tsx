@@ -1,3 +1,4 @@
+// cSpell:disable
 import React from 'react';
 import { FaMoneyBillWave, FaHeart, FaEdit, FaFileImage } from 'react-icons/fa';
 import '../styles/OfertaDizimoCard.scss';
