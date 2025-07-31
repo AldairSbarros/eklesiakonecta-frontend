@@ -1,4 +1,3 @@
-import React from 'react';
 import PastorCadastro from '../components/PastorCadastro';
 import '../styles/PastorCadastro.scss';
 

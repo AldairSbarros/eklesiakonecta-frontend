@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getApiUrl } from "../config/api";
 import { toast } from "react-toastify";
 

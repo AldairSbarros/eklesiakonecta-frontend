@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const HF_API_URL = "https://api-inference.huggingface.co/models/allenai/t5-base-portuguese";
 

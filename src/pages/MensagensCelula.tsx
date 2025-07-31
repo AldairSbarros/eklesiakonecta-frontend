@@ -1,4 +1,3 @@
-import React from "react";
 import MensagemCelula from "../components/MensagemCelula";
 
 const MensagensCelulaPage: React.FC = () => {

@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import { useState } from "react";
 import MemberCadastro from "../components/MemberCadastro";
 import MemberList from "../components/MemberList";
 import MemberDetalhe from "../components/MemberDetalhe";

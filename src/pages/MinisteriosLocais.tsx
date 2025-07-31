@@ -1,4 +1,3 @@
-import React from "react";
 import MinisterioLocalList from "../components/MinisterioLocalList";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaFileExcel, FaFilePdf, FaCheckCircle, FaSpinner, FaWhatsapp, FaPaperPlane } from 'react-icons/fa';
 import { getApiUrl } from '../config/api';
 import '../styles/RelatorioExportacao.scss';

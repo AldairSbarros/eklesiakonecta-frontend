@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import type { OfertaDizimo } from '../types/OfertaDizimo';
 import { toast, ToastContainer } from 'react-toastify';

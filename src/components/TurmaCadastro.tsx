@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getApiUrl } from '../config/api';
 import '../styles/TurmaCadastro.scss';
 

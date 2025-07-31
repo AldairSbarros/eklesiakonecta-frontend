@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './SuperModal.scss';
 import { getApiUrl } from '../config/api';
 
