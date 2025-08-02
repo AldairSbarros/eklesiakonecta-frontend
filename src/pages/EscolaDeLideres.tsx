@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import TurmaCadastro from '../components/TurmaCadastro';
 import ModuloCadastro from '../components/ModuloCadastro';
 import  LicaoCadastro  from '../components/LicaoCadastro';

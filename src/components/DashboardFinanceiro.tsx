@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getApiUrl } from '../config/api';
 import '../styles/DashboardFinanceiro.scss';
 import { Chart, registerables } from 'chart.js';

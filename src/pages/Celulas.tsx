@@ -1,4 +1,3 @@
-import React from 'react';
 import CelulaCadastro from '../components/CelulaCadastro';
 
 export default function CelulasPage() {

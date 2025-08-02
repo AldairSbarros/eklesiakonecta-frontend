@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FaUpload, FaSave, FaTimes, FaMoneyBillWave, FaHeart } from 'react-icons/fa';
+import { FaSave, FaTimes } from 'react-icons/fa';
 import '../styles/OfertaDizimoForm.scss';
 
 interface OfertaDizimoFormProps {

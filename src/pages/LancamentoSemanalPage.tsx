@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const congregacoes = [
   { id: 9, nome: "Congregação 9" },
@@ -10,8 +10,8 @@ const congregacoes = [
 const semanas = ["1ª Semana", "2ª Semana", "3ª Semana", "4ª Semana", "5ª Semana"];
 
 function LancamentoSemanalPage() {
-  const [ano, setAno] = useState(2025);
-  const [mes, setMes] = useState("Maio");
+  const [ano] = useState(2025);
+  const [mes] = useState("Maio");
   const [valores, setValores] = useState(() => {
     // Tenta carregar do localStorage
     const salvo = localStorage.getItem("lancamentoSemanal");
@@ -19,7 +19,7 @@ function LancamentoSemanalPage() {
   });
 
   const handleValorChange = (congId: number, semana: string, valor: string) => {
-    setValores(v => {
+    setValores((v: any) => {
       const novo = { ...v };
       if (!novo[congId]) novo[congId] = { semanas: {}, comissao: "0,00" };
       novo[congId].semanas[semana] = valor;
@@ -29,7 +29,7 @@ function LancamentoSemanalPage() {
   };
 
   const handleComissaoChange = (congId: number, valor: string) => {
-    setValores(v => {
+    setValores((v: any) => {
       const novo = { ...v };
       if (!novo[congId]) novo[congId] = { semanas: {}, comissao: "0,00" };
       novo[congId].comissao = valor;
