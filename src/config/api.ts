@@ -1,6 +1,6 @@
 // Configuração da API
 export const API_CONFIG = {
-  baseURL: 'https://api.eklesia.app.br:3001',
+  baseURL: 'https://api.eklesia.app.br',
   endpoints: {
     auth: '/api/auth/login',
     cadastro: '/api/cadastro-inicial',
