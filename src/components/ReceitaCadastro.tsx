@@ -12,7 +12,7 @@ interface Receita {
   origem: string;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+import { API_URL } from '../config/api';
 
 function ReceitaCadastro() {
   const [receitas, setReceitas] = useState<Receita[]>([]);
@@ -32,7 +32,7 @@ function ReceitaCadastro() {
   const fetchReceitas = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/receita`, { headers: { schema } });
+      const res = await axios.get(`${API_URL}/api/receita`, { headers: { schema } });
       setReceitas(res.data);
     } catch {
       toast.error("Erro ao buscar receitas");
@@ -47,7 +47,7 @@ function ReceitaCadastro() {
     setLoading(true);
     try {
       await axios.post(
-        `${API_URL}/receita`,
+        `${API_URL}/api/receita`,
         { valor, data, descricao, categoria, origem },
         { headers: { schema } }
       );
@@ -68,7 +68,7 @@ function ReceitaCadastro() {
     if (!window.confirm("Remover receita?")) return;
     setLoading(true);
     try {
-      await axios.delete(`${API_URL}/receita/${id}`, { headers: { schema } });
+      await axios.delete(`${API_URL}/api/receita/${id}`, { headers: { schema } });
       toast.success("Receita removida");
       fetchReceitas();
     } catch {

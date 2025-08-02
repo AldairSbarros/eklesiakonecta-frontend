@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+import { API_URL } from '../config/api';
 
 interface Usuario {
   id: number;
@@ -22,7 +22,7 @@ function UsuariosPage() {
   const fetchUsuarios = () => {
     setLoading(true);
     setErro("");
-    fetch(`${API_URL}/usuarios`, { headers: { schema } })
+    fetch(`${API_URL}/api/usuarios`, { headers: { schema } })
       .then(res => res.json())
       .then(data => setUsuarios(data))
       .catch(() => setErro("Erro ao buscar usuários."))
@@ -39,7 +39,7 @@ function UsuariosPage() {
     setLoading(true);
     setErro("");
     const method = editando ? "PUT" : "POST";
-    const url = editando ? `${API_URL}/usuarios/${editando.id}` : `${API_URL}/usuarios`;
+    const url = editando ? `${API_URL}/api/usuarios/${editando.id}` : `${API_URL}/api/usuarios`;
     fetch(url, {
       method,
       headers: { "Content-Type": "application/json", schema },
@@ -59,7 +59,7 @@ function UsuariosPage() {
   const handleDelete = (id: number) => {
     if (!window.confirm("Confirma remover este usuário?")) return;
     setLoading(true);
-    fetch(`${API_URL}/usuarios/${id}`, {
+    fetch(`${API_URL}/api/usuarios/${id}`, {
       method: "DELETE",
       headers: { schema }
     })

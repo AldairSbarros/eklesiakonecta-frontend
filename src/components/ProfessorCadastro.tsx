@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getApiUrl } from '../config/api';
+import { API_URL } from '../config/api';
 import '../styles/ProfessorCadastro.scss';
 
 interface Professor {
@@ -28,7 +28,7 @@ export default function ProfessorCadastro() {
       return;
     }
     try {
-      const response = await fetch(getApiUrl('/api/escola-lideres/professores'), {
+      const response = await fetch(`${API_URL}/api/escola-lideres/professores`, {
         headers: { 'schema': schema }
       });
       const data = await response.json();
@@ -68,7 +68,7 @@ export default function ProfessorCadastro() {
     try {
       let response;
       if (editId) {
-        response = await fetch(getApiUrl(`/api/escola-lideres/professores/${editId}`), {
+        response = await fetch(`${API_URL}/api/escola-lideres/professores/${editId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ export default function ProfessorCadastro() {
           body: JSON.stringify(form)
         });
       } else {
-        response = await fetch(getApiUrl('/api/escola-lideres/professores'), {
+        response = await fetch(`${API_URL}/api/escola-lideres/professores`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ export default function ProfessorCadastro() {
       return;
     }
     try {
-      const response = await fetch(getApiUrl(`/api/escola-lideres/professores/${id}`), {
+      const response = await fetch(`${API_URL}/api/escola-lideres/professores/${id}`, {
         method: 'DELETE',
         headers: { 'schema': schema }
       });

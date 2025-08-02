@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FaFileExcel, FaFilePdf, FaCheckCircle, FaSpinner, FaWhatsapp, FaPaperPlane } from 'react-icons/fa';
-import { getApiUrl } from '../config/api';
+import { API_URL } from '../config/api';
 import '../styles/RelatorioExportacao.scss';
 
 interface Congregacao {
@@ -54,7 +54,7 @@ export default function RelatorioExportacao() {
     }
     try {
       // Gera o relatório PDF (blob)
-      const url = getApiUrl(`/api/relatorio/exportar/pdf?congregacaoId=${congregacaoId}&mes=${mes}&ano=${ano}`);
+      const url = `${API_URL}/api/relatorio/exportar/pdf?congregacaoId=${congregacaoId}&mes=${mes}&ano=${ano}`;
       const response = await fetch(url, { headers: { 'schema': schema } });
       if (!response.ok) {
         const data = await response.json();
@@ -67,7 +67,7 @@ export default function RelatorioExportacao() {
       const formData = new FormData();
       formData.append('file', blob, 'relatorio.pdf');
       formData.append('numero', numeroWhats);
-      const sendResp = await fetch(getApiUrl('/api/relatorio/enviar-whatsapp'), {
+      const sendResp = await fetch(`${API_URL}/api/relatorio/enviar-whatsapp`, {
         method: 'POST',
         body: formData,
         headers: { 'schema': schema }
@@ -95,7 +95,7 @@ export default function RelatorioExportacao() {
         return;
       }
       try {
-        const response = await fetch(getApiUrl('/api/congregacoes'), {
+        const response = await fetch(`${API_URL}/api/congregacoes`, {
           headers: { 'schema': schema }
         });
         const data = await response.json();
@@ -128,7 +128,7 @@ export default function RelatorioExportacao() {
       return;
     }
     try {
-      const url = getApiUrl(`/api/relatorio/exportar/${tipo}?congregacaoId=${congregacaoId}&mes=${mes}&ano=${ano}`);
+      const url = `${API_URL}/api/relatorio/exportar/${tipo}?congregacaoId=${congregacaoId}&mes=${mes}&ano=${ano}`;
       const response = await fetch(url, {
         headers: { 'schema': schema }
       });

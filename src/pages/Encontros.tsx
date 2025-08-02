@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import EncontroCadastro from '../components/EncontroCadastro';
-import { getApiUrl } from '../config/api';
+import { API_URL } from '../config/api';
 import '../styles/Encontros.scss';
 
 interface Encontro {
@@ -27,7 +27,7 @@ export default function Encontros() {
       return;
     }
     try {
-      const response = await fetch(getApiUrl('/api/encontros'), {
+      const response = await fetch(`${API_URL}/api/encontros`, {
         headers: { 'schema': schema }
       });
       const data = await response.json();

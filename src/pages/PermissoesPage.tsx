@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+import { API_URL } from '../config/api';
 
 interface UsuarioPermissao {
   id: number;
@@ -20,7 +20,7 @@ function PermissoesPage() {
   const fetchPermissoes = () => {
     setLoading(true);
     setErro("");
-    fetch(`${API_URL}/usuario-permissao`, { headers: { schema } })
+    fetch(`${API_URL}/api/usuario-permissao`, { headers: { schema } })
       .then(res => res.json())
       .then(data => setPermissoes(data))
       .catch(() => setErro("Erro ao buscar permissões."))
@@ -37,7 +37,7 @@ function PermissoesPage() {
     setLoading(true);
     setErro("");
     const method = editando ? "PUT" : "POST";
-    const url = editando ? `${API_URL}/usuario-permissao/${editando.id}` : `${API_URL}/usuario-permissao`;
+    const url = editando ? `${API_URL}/api/usuario-permissao/${editando.id}` : `${API_URL}/api/usuario-permissao`;
     fetch(url, {
       method,
       headers: { "Content-Type": "application/json", schema },
@@ -57,7 +57,7 @@ function PermissoesPage() {
   const handleDelete = (id: number) => {
     if (!window.confirm("Confirma remover esta permissão?")) return;
     setLoading(true);
-    fetch(`${API_URL}/usuario-permissao/${id}`, {
+    fetch(`${API_URL}/api/usuario-permissao/${id}`, {
       method: "DELETE",
       headers: { schema }
     })

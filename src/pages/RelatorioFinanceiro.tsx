@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+import { API_URL } from '../config/api';
 
 function RelatorioFinanceiro() {
   type RelatorioFinanceiroData = Record<string, unknown>; // Adjust this type as needed for your data shape
@@ -12,7 +12,7 @@ function RelatorioFinanceiro() {
   useEffect(() => {
     setLoading(true);
     setErro("");
-    fetch(`${API_URL}/relatorio-financeiro`, { headers: { schema } })
+    fetch(`${API_URL}/api/relatorio-financeiro`, { headers: { schema } })
       .then(res => res.json())
       .then(data => setDados(data))
       .catch(() => setErro("Erro ao buscar relatório financeiro."))

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+import { API_URL } from '../config/api';
 
 interface Venda {
   id: number;
@@ -35,7 +35,7 @@ function VendasPage() {
   const fetchVendas = () => {
     setLoading(true);
     setErro("");
-    fetch(`${API_URL}/vendas`, { headers: { schema } })
+    fetch(`${API_URL}/api/vendas`, { headers: { schema } })
       .then(res => res.json())
       .then(data => setVendas(data))
       .catch(() => setErro("Erro ao buscar vendas."))
@@ -52,7 +52,7 @@ function VendasPage() {
     setLoading(true);
     setErro("");
     const method = editando ? "PUT" : "POST";
-    const url = editando ? `${API_URL}/vendas/${editando.id}` : `${API_URL}/vendas`;
+    const url = editando ? `${API_URL}/api/vendas/${editando.id}` : `${API_URL}/api/vendas`;
     fetch(url, {
       method,
       headers: { "Content-Type": "application/json", schema },
@@ -72,7 +72,7 @@ function VendasPage() {
   const handleDelete = (id: number) => {
     if (!window.confirm("Confirma remover esta venda?")) return;
     setLoading(true);
-    fetch(`${API_URL}/vendas/${id}`, {
+    fetch(`${API_URL}/api/vendas/${id}`, {
       method: "DELETE",
       headers: { schema }
     })
@@ -166,7 +166,7 @@ function VendasPage() {
           <form onSubmit={async e => {
             e.preventDefault();
             setFaturaLoading(true);
-            await fetch(`${API_URL}/vendas/${faturaModal.vendaId}/faturas`, {
+            await fetch(`${API_URL}/api/vendas/${faturaModal.vendaId}/faturas`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', schema },
               body: JSON.stringify(novaFatura)

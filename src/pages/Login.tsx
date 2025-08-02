@@ -17,7 +17,7 @@ import {
   FaGoogle,
   FaFacebook,
 } from "react-icons/fa";
-import { getApiUrl } from "../config/api";
+import { API_URL } from "../config/api";
 import "../styles/Login.scss";
 import Header from "../components/Header";
 
@@ -90,7 +90,7 @@ export default function Login() {
 
   const testarBackend = async () => {
     try {
-      await fetch(getApiUrl("/test"), {
+      await fetch(`${API_URL}/test`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -132,7 +132,7 @@ export default function Login() {
     email: string
   ): Promise<string | null> => {
     try {
-      const response = await fetch(getApiUrl("/api/auth/schema"), {
+      const response = await fetch(`${API_URL}/api/auth/schema`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -177,7 +177,7 @@ export default function Login() {
         "X-Church-Schema": schema,
         "schema": schema,
       };
-      const response = await fetch(getApiUrl("/api/auth/login"), {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: headers,
         body: JSON.stringify({
@@ -262,7 +262,7 @@ export default function Login() {
     setForgotLoading(true);
     setForgotMessage("");
     try {
-      const response = await fetch(getApiUrl("/api/auth/forgot-password"), {
+      const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: forgotEmail }),
@@ -408,7 +408,7 @@ export default function Login() {
             <button
               type="button"
               className="social-btn google"
-              onClick={() => window.location.href = getApiUrl("/api/auth/google")}
+              onClick={() => window.location.href = `${API_URL}/api/auth/google`}
               disabled={loading}
               title="Entrar com Google"
             >
@@ -417,7 +417,7 @@ export default function Login() {
             <button
               type="button"
               className="social-btn facebook"
-              onClick={() => window.location.href = getApiUrl("/api/auth/facebook")}
+              onClick={() => window.location.href = `${API_URL}/api/auth/facebook`}
               disabled={loading}
               title="Entrar com Facebook"
             >

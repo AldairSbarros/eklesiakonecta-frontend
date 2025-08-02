@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getApiUrl } from '../config/api';
+import { API_URL } from '../config/api';
 import '../styles/SecretarioCadastro.scss';
 
 interface Secretario {
@@ -28,7 +28,7 @@ export default function SecretarioCadastro() {
       return;
     }
     try {
-      const response = await fetch(getApiUrl('/api/escola-lideres/secretarios'), {
+      const response = await fetch(`${API_URL}/api/escola-lideres/secretarios`, {
         headers: { 'schema': schema }
       });
       const data = await response.json();
@@ -68,7 +68,7 @@ export default function SecretarioCadastro() {
     try {
       let response;
       if (editId) {
-        response = await fetch(getApiUrl(`/api/escola-lideres/secretarios/${editId}`), {
+        response = await fetch(`${API_URL}/api/escola-lideres/secretarios/${editId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ export default function SecretarioCadastro() {
           body: JSON.stringify(form)
         });
       } else {
-        response = await fetch(getApiUrl('/api/escola-lideres/secretarios'), {
+        response = await fetch(`${API_URL}/api/escola-lideres/secretarios`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ export default function SecretarioCadastro() {
       return;
     }
     try {
-      const response = await fetch(getApiUrl(`/api/escola-lideres/secretarios/${id}`), {
+      const response = await fetch(`${API_URL}/api/escola-lideres/secretarios/${id}`, {
         method: 'DELETE',
         headers: { 'schema': schema }
       });

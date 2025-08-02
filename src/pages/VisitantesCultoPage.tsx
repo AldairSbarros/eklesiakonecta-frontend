@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+import { API_URL } from '../config/api';
 
 interface Visitante {
   id: number;
@@ -21,7 +21,7 @@ function VisitantesCultoPage() {
   const fetchVisitantes = () => {
     setLoading(true);
     setErro("");
-    fetch(`${API_URL}/visitantes-culto`, { headers: { schema } })
+    fetch(`${API_URL}/api/visitantes-culto`, { headers: { schema } })
       .then(res => res.json())
       .then(data => setVisitantes(data))
       .catch(() => setErro("Erro ao buscar visitantes."))
@@ -38,7 +38,7 @@ function VisitantesCultoPage() {
     setLoading(true);
     setErro("");
     const method = editando ? "PUT" : "POST";
-    const url = editando ? `${API_URL}/visitantes-culto/${editando.id}` : `${API_URL}/visitantes-culto`;
+    const url = editando ? `${API_URL}/api/visitantes-culto/${editando.id}` : `${API_URL}/api/visitantes-culto`;
     fetch(url, {
       method,
       headers: { "Content-Type": "application/json", schema },
@@ -58,7 +58,7 @@ function VisitantesCultoPage() {
   const handleDelete = (id: number) => {
     if (!window.confirm("Confirma remover este visitante?")) return;
     setLoading(true);
-    fetch(`${API_URL}/visitantes-culto/${id}`, {
+    fetch(`${API_URL}/api/visitantes-culto/${id}`, {
       method: "DELETE",
       headers: { schema }
     })

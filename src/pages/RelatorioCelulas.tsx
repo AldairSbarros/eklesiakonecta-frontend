@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+import { API_URL } from '../config/api';
 
 function RelatorioCelulas() {
   const [dados, setDados] = useState<Record<string, unknown>[] | Record<string, unknown> | null>(null);
@@ -11,7 +11,7 @@ function RelatorioCelulas() {
   useEffect(() => {
     setLoading(true);
     setErro("");
-    fetch(`${API_URL}/relatorio-celulas`, { headers: { schema } })
+    fetch(`${API_URL}/api/relatorio-celulas`, { headers: { schema } })
       .then(res => res.json())
       .then(data => setDados(data))
       .catch(() => setErro("Erro ao buscar relatório de células."))

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getApiUrl } from '../config/api';
+import { API_URL } from '../config/api';
 import '../styles/TurmaCadastro.scss';
 
 interface Turma {
@@ -28,7 +28,7 @@ export default function TurmaCadastro() {
       return;
     }
     try {
-      const response = await fetch(getApiUrl('/api/escola-lideres/turmas'), {
+      const response = await fetch(`${API_URL}/api/escola-lideres/turmas`, {
         headers: { 'schema': schema }
       });
       const data = await response.json();
@@ -68,7 +68,7 @@ export default function TurmaCadastro() {
     try {
       let response;
       if (editId) {
-        response = await fetch(getApiUrl(`/api/escola-lideres/turmas/${editId}`), {
+        response = await fetch(`${API_URL}/api/escola-lideres/turmas/${editId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ export default function TurmaCadastro() {
           body: JSON.stringify(form)
         });
       } else {
-        response = await fetch(getApiUrl('/api/escola-lideres/turmas'), {
+        response = await fetch(`${API_URL}/api/escola-lideres/turmas`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ export default function TurmaCadastro() {
       return;
     }
     try {
-      const response = await fetch(getApiUrl(`/api/escola-lideres/turmas/${id}`), {
+      const response = await fetch(`${API_URL}/api/escola-lideres/turmas/${id}`, {
         method: 'DELETE',
         headers: { 'schema': schema }
       });

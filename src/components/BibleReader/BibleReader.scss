@@ -1,0 +1,20 @@
+// Estilos básicos para o BibleReader
+.bible-reader {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(59,130,246,0.08);
+  padding: 1.5rem 1rem;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #222;
+  min-height: 300px;
+}
+
+@media (max-width: 768px) {
+  .bible-reader {
+    padding: 0.5rem 0.2rem;
+    min-height: 200px;
+  }
+}

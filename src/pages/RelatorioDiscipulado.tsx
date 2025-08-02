@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+import { API_URL } from '../config/api';
 
 function RelatorioDiscipulado() {
   type RelatorioDiscipuladoData = Record<string, unknown>; // Replace with a more specific type if known
@@ -12,7 +12,7 @@ function RelatorioDiscipulado() {
   useEffect(() => {
     setLoading(true);
     setErro("");
-    fetch(`${API_URL}/relatorio-discipulado`, { headers: { schema } })
+    fetch(`${API_URL}/api/relatorio-discipulado`, { headers: { schema } })
       .then(res => res.json())
       .then(data => setDados(data))
       .catch(() => setErro("Erro ao buscar relatório de discipulado."))

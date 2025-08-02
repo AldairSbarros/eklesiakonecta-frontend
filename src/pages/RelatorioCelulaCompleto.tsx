@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+import { API_URL } from '../config/api';
 
 interface Membro {
   id: number;
@@ -44,7 +44,7 @@ function RelatorioCelulaCompleto() {
     setLoading(true);
     setErro("");
     const params = new URLSearchParams({ mes, ano });
-    fetch(`${API_URL}/celulas/${celulaId}/relatorio-completo?${params.toString()}`, { headers: { schema } })
+    fetch(`${API_URL}/api/celulas/${celulaId}/relatorio-completo?${params.toString()}`, { headers: { schema } })
       .then(res => res.json())
       .then(data => setDados(data))
       .catch(() => setErro("Erro ao buscar relatório completo."))

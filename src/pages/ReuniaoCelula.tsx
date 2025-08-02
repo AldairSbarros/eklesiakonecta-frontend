@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+import { API_URL } from '../config/api';
 
 interface Reuniao {
   id: number;
@@ -21,7 +21,7 @@ function ReuniaoCelula() {
   const fetchReunioes = () => {
     setLoading(true);
     setErro("");
-    fetch(`${API_URL}/reunioes`, { headers: { schema } })
+    fetch(`${API_URL}/api/reunioes`, { headers: { schema } })
       .then(res => res.json())
       .then(data => setReunioes(data))
       .catch(() => setErro("Erro ao buscar reuniões."))
@@ -37,7 +37,7 @@ function ReuniaoCelula() {
     setLoading(true);
     setErro("");
     const method = editando ? "PUT" : "POST";
-    const url = editando ? `${API_URL}/reunioes/${editando.id}` : `${API_URL}/reunioes`;
+    const url = editando ? `${API_URL}/api/reunioes/${editando.id}` : `${API_URL}/api/reunioes`;
     fetch(url, {
       method,
       headers: { "Content-Type": "application/json", schema },
@@ -57,7 +57,7 @@ function ReuniaoCelula() {
   const handleDelete = (id: number) => {
     if (!window.confirm("Confirma remover esta reunião?")) return;
     setLoading(true);
-    fetch(`${API_URL}/reunioes/${id}`, {
+    fetch(`${API_URL}/api/reunioes/${id}`, {
       method: "DELETE",
       headers: { schema }
     })

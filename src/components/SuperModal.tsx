@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './SuperModal.scss';
-import { getApiUrl } from '../config/api';
+import { API_URL } from '../config/api';
 
 interface SuperModalProps {
   isOpen: boolean;
@@ -20,7 +20,7 @@ export default function SuperModal({ isOpen, onClose, onLoginSuccess }: SuperMod
     setLoading(true);
     try {
       // Login DevUser no backend configurado
-      const response = await fetch(getApiUrl('/api/auth/login'), {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaUser, FaEnvelope, FaLock, FaSpinner, FaCheck, FaChurch } from 'react-icons/fa';
-import { getApiUrl } from '../config/api';
+import { API_URL } from '../config/api';
 import '../styles/CadastroInicial.scss';
 import Header from '../components/Header';
 import EklesiaLogo from '../assets/EklesiaKonecta.png';
@@ -78,7 +78,7 @@ export default function CadastroInicial({ onSuccess }: CadastroInicialProps) {
     const inicio = Date.now();
 
     try {
-      const response = await fetch(getApiUrl('/api/cadastro-inicial'), {
+      const response = await fetch(`${API_URL}/api/cadastro-inicial`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
