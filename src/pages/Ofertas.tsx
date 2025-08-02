@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 import type { OfertaDizimo } from '../types/OfertaDizimo';
 import { toast, ToastContainer } from 'react-toastify';
@@ -17,10 +17,10 @@ const Ofertas: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [editData, setEditData] = useState<OfertaDizimo | null>(null);
   // Estatísticas
-  const totalOfertas = React.useMemo(() => registros.filter(r => r.tipo === 'oferta').reduce((acc, r) => acc + r.valor, 0), [registros]);
-  const totalDizimos = React.useMemo(() => registros.filter(r => r.tipo === 'dizimo').reduce((acc, r) => acc + r.valor, 0), [registros]);
+  const totalOfertas = useMemo(() => registros.filter(r => r.tipo === 'oferta').reduce((acc, r) => acc + r.valor, 0), [registros]);
+  const totalDizimos = useMemo(() => registros.filter(r => r.tipo === 'dizimo').reduce((acc, r) => acc + r.valor, 0), [registros]);
   const totalGeral = totalOfertas + totalDizimos;
-  const pieData = React.useMemo(() => [
+  const pieData = useMemo(() => [
     { name: 'Ofertas', value: totalOfertas },
     { name: 'Dízimos', value: totalDizimos }
   ], [totalOfertas, totalDizimos]);
@@ -126,7 +126,7 @@ const Ofertas: React.FC = () => {
                 dataKey="value"
                 label={({ name, percent }) => `${name}: ${percent ? (percent * 100).toFixed(0) : 0}%`}
               >
-                {pieData.map((entry, index) => (
+                {pieData.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
