@@ -78,6 +78,13 @@ export default function CadastroInicial({ onSuccess }: CadastroInicialProps) {
     const inicio = Date.now();
 
     try {
+      console.log('Enviando dados para cadastro:', JSON.stringify({
+  ...dados,
+  perfilUsuario: 'ADMIN',
+  perfilUsuarioExtra: 'SUPERUSER'
+      }));
+      
+      // Endpoint para CADASTRO (criação de igreja)
       const response = await fetch(`${API_URL}/api/cadastro-inicial`, {
         method: 'POST',
         headers: {
@@ -85,11 +92,26 @@ export default function CadastroInicial({ onSuccess }: CadastroInicialProps) {
         },
         body: JSON.stringify({
           ...dados,
-          perfilUsuario: 'ADMIN'
+          perfilUsuario: 'ADMIN',
+          perfilUsuarioExtra: 'SUPERUSER'
         })
       });
 
-      const result = await response.json();
+      // Capturar o corpo da resposta como texto para diagnóstico
+      const responseText = await response.text();
+      console.log('Resposta completa do servidor:', responseText);
+      
+      // Tentar parsear como JSON
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (e) {
+        console.error('Erro ao parsear resposta como JSON:', e);
+        setErro(`Resposta inválida do servidor: ${responseText.substring(0, 100)}...`);
+        setInstalando(false);
+        setLoading(false);
+        return;
+      }
 
       const tempoRestante = tempoMinimo - (Date.now() - inicio);
       if (tempoRestante > 0) {
@@ -131,9 +153,20 @@ export default function CadastroInicial({ onSuccess }: CadastroInicialProps) {
         }, 2000);
       } else {
         setInstalando(false);
-        setErro(result.error || 'Erro ao cadastrar igreja');
+        // Tratamento específico para o erro de tabelas
+        if (result.error && result.error.includes('criar tabelas')) {
+          console.error('Erro detalhado do backend:', result);
+          setErro(`${result.error} Possíveis causas: 
+            1. O banco de dados está inacessível
+            2. Problemas de permissão no banco
+            3. O nome da igreja já está em uso
+            Por favor, tente novamente ou entre em contato com o suporte.`);
+        } else {
+          setErro(result.error || 'Erro ao cadastrar igreja');
+        }
       }
-    } catch {
+    } catch (error) {
+      console.error('Erro completo:', error);
       setInstalando(false);
       setErro('Erro de conexão. Verifique sua internet e tente novamente.');
     } finally {
@@ -281,6 +314,7 @@ export default function CadastroInicial({ onSuccess }: CadastroInicialProps) {
                   placeholder="Mínimo 6 caracteres"
                   minLength={6}
                   required
+                  autoComplete="new-password" // Adicione esta linha para resolver o aviso
                   disabled={loading || instalando}
                 />
               </div>

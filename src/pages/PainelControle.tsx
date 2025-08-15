@@ -105,7 +105,7 @@ export default function PainelControle() {
         id: 1,
         nome: dados.nomePastor || 'Usuário',
         email: dados.emailPastor || '',
-        perfil: dados.perfilUsuario || 'USUARIO' // Pastor, Tesoureiro, Secretário, Dirigente
+  perfil: dados.perfilUsuario || 'USUARIO' // Pastor, Tesoureiro, Secretário, Dirigente
       };
       
       setUsuario(usuarioLogado);
@@ -171,7 +171,7 @@ export default function PainelControle() {
       isNew: true
     },
     // Card de Recuperar Senha (apenas para administrativos)
-    ...(usuario && ['ADMIN', 'PASTOR', 'TESOUREIRO', 'SECRETARIO'].includes(usuario.perfil?.toUpperCase?.()) ? [
+  ...(usuario && ['SUPERUSER', 'ADMIN', 'PASTOR', 'TESOUREIRO', 'SECRETARIO'].includes(usuario.perfil?.toUpperCase?.()) ? [
       {
         id: 'recuperar-senha',
         title: 'Recuperar Senha',
@@ -635,7 +635,7 @@ export default function PainelControle() {
       </section>
 
       {/* Botão de cadastro de igreja (apenas para ADMIN/PASTOR) */}
-      {usuario && ['ADMIN', 'PASTOR'].includes(usuario.perfil?.toUpperCase?.()) && (
+  {usuario && ['SUPERUSER', 'ADMIN', 'PASTOR'].includes(usuario.perfil?.toUpperCase?.()) && (
         <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '1rem 2rem 0 0' }}>
           <button
             className="btn-cadastrar-igreja"
