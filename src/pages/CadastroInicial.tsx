@@ -78,25 +78,18 @@ export default function CadastroInicial({ onSuccess }: CadastroInicialProps) {
     const inicio = Date.now();
 
     try {
-      console.log('Enviando dados para cadastro:', JSON.stringify({
-  ...dados,
-  perfilUsuario: 'ADMIN',
-  perfilUsuarioExtra: 'SUPERUSER'
-      }));
+  console.log('Enviando dados para cadastro:', JSON.stringify({
+    ...dados
+  }));
       
       // Endpoint para CADASTRO (criação de igreja)
-      const response = await fetch(`${API_URL}/api/cadastro-inicial`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...dados,
-          perfilUsuario: 'ADMIN',
-          perfilUsuarioExtra: 'SUPERUSER'
-        })
-      });
-
+   const response = await fetch(`${API_URL}/api/cadastro-inicial`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(dados),
+});
       // Capturar o corpo da resposta como texto para diagnóstico
       const responseText = await response.text();
       console.log('Resposta completa do servidor:', responseText);
