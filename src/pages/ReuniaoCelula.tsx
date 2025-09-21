@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { API_URL } from '../config/api';
+import { useCallback, useEffect, useState } from "react";
+import { http } from '../config/http';
 
 interface Reuniao {
   id: number;
@@ -16,34 +16,31 @@ function ReuniaoCelula() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editando, setEditando] = useState<Reuniao | null>(null);
   const [form, setForm] = useState<Partial<Reuniao>>({});
-  const schema = localStorage.getItem("schema") || "";
+  const igrejaData = localStorage.getItem('eklesiakonecta_igreja');
+  const schema = (() => {
+    try { return (igrejaData && JSON.parse(igrejaData).schema) || localStorage.getItem('church_schema') || ""; } catch { return localStorage.getItem('church_schema') || ""; }
+  })();
 
-  const fetchReunioes = () => {
+  const fetchReunioes = useCallback(() => {
     setLoading(true);
     setErro("");
-    fetch(`${API_URL}/api/reunioes`, { headers: { schema } })
-      .then(res => res.json())
-      .then(data => setReunioes(data))
+    http('/api/reunioes', { schema })
+      .then((data) => setReunioes(Array.isArray(data) ? (data as Reuniao[]) : []))
       .catch(() => setErro("Erro ao buscar reuniões."))
       .finally(() => setLoading(false));
-  };
+  }, [schema]);
 
   useEffect(() => {
     fetchReunioes();
-  }, [schema]);
+  }, [fetchReunioes]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErro("");
-    const method = editando ? "PUT" : "POST";
-    const url = editando ? `${API_URL}/api/reunioes/${editando.id}` : `${API_URL}/api/reunioes`;
-    fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json", schema },
-      body: JSON.stringify(form)
-    })
-      .then(res => res.json())
+    const method = editando ? 'PUT' : 'POST';
+    const url = editando ? `/api/reunioes/${editando.id}` : `/api/reunioes`;
+    http(url, { method, schema, body: JSON.stringify(form) })
       .then(() => {
         setModalOpen(false);
         setEditando(null);
@@ -57,10 +54,7 @@ function ReuniaoCelula() {
   const handleDelete = (id: number) => {
     if (!window.confirm("Confirma remover esta reunião?")) return;
     setLoading(true);
-    fetch(`${API_URL}/api/reunioes/${id}`, {
-      method: "DELETE",
-      headers: { schema }
-    })
+    http(`/api/reunioes/${id}`, { method: 'DELETE', schema })
       .then(() => fetchReunioes())
       .catch(() => setErro("Erro ao remover reunião."))
       .finally(() => setLoading(false));

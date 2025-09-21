@@ -18,8 +18,15 @@ import {
   FaFacebook,
 } from "react-icons/fa";
 import { API_URL } from "../config/api";
+import { http } from "../config/http";
+import { useSession } from "../store/session";
 import "../styles/Login.scss";
 import Header from "../components/Header";
+import type { } from 'react';
+
+type SchemaResponse = { schema?: string };
+type LoginUser = { nome?: string; email?: string; igreja?: string; perfil?: string; schema?: string };
+type LoginResponse = { token: string; user: LoginUser };
 
 interface LoginData {
   email: string;
@@ -35,6 +42,7 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as LocationState & { schema?: string; isNewRegistration?: boolean };
+  const { save } = useSession();
 
   // Se vier schema pelo state (após cadastro), salva no localStorage
   useEffect(() => {
@@ -76,7 +84,7 @@ export default function Login() {
         console.error("Erro ao carregar dados da igreja:", error);
       }
     }
-    testarBackend();
+  testarBackend();
 
     // Verifica se veio token do OAuth
     const params = new URLSearchParams(window.location.search);
@@ -86,14 +94,11 @@ export default function Login() {
       // Opcional: buscar dados do usuário via backend
       navigate("/painel-controle");
     }
-  }, []);
+  }, [navigate]);
 
   const testarBackend = async () => {
     try {
-      await fetch(`${API_URL}/test`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
+      await http('/api/health/ping', { method: 'GET' });
     } catch (error) {
       console.error("Erro ao testar backend:", error);
     }
@@ -132,16 +137,11 @@ export default function Login() {
     email: string
   ): Promise<string | null> => {
     try {
-      const response = await fetch(`${API_URL}/api/auth/schema`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      if (response.ok) {
-        const result = await response.json();
-        return result.schema || null;
-      }
-      return null;
+      const result = (await http('/api/auth/schema', {
+        method: 'POST',
+        body: JSON.stringify({ email })
+      })) as SchemaResponse;
+      return result.schema || null;
     } catch {
       return null;
     }
@@ -172,57 +172,52 @@ export default function Login() {
           return;
         }
       }
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-        "X-Church-Schema": schema,
-        "schema": schema,
-      };
-      const response = await fetch(`${API_URL}/api/auth/login`, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({
-          email: dados.email,
-          senha: dados.senha,
-        }),
-      });
-      const result = await response.json();
-      if (response.ok) {
+      const result = (await http('/api/auth/login', {
+        method: 'POST',
+        schema,
+        body: JSON.stringify({ email: dados.email, senha: dados.senha })
+      })) as LoginResponse;
+      if (result?.token) {
+        const r = result;
         const userData = {
-          ...result.user,
-          token: result.token,
-          schema: result.user.schema || schema,
+          ...r.user,
+          token: r.token,
+          schema: (r.user && r.user.schema) || schema,
           isLoggedIn: true,
-          perfilUsuario: result.user.perfil,
+          perfilUsuario: r.user?.perfil,
         };
         const igrejaDataAtualizada = {
-          nomeIgreja: result.user.igreja || userData.igreja,
+          nomeIgreja: r.user?.igreja || userData.igreja,
           nomePastor: userData.nome,
           emailPastor: userData.email,
           schema: userData.schema,
-          token: result.token,
-          perfilUsuario: result.user.perfil,
+          token: r.token,
+          perfilUsuario: r.user?.perfil,
           isLoggedIn: true,
           sistemaConfigurado: true,
         };
         localStorage.setItem("eklesiakonecta_igreja", JSON.stringify(igrejaDataAtualizada));
-        localStorage.setItem("eklesiakonecta_token", result.token);
+        localStorage.setItem("eklesiakonecta_token", r.token);
+        // novas chaves padronizadas
+        save(r.token, userData.schema);
         if (lembrarMe) {
           localStorage.setItem("eklesiakonecta_lembrar", "true");
         }
         setShowSuccess(true);
-        toast.success(`Bem-vindo, ${result.user.nome}!`);
+        toast.success(`Bem-vindo, ${r.user?.nome || 'usuário'}!`);
         setTimeout(() => {
           navigate("/painel-controle", {
             state: {
-              message: `Bem-vindo, ${result.user.nome}! Perfil: ${result.user.perfil}`,
-              igreja: result.user.igreja || userData.igreja,
-              perfil: result.user.perfil,
+              message: `Bem-vindo, ${r.user?.nome}! Perfil: ${r.user?.perfil}`,
+              igreja: r.user?.igreja || userData.igreja,
+              perfil: r.user?.perfil,
             },
           });
         }, 1200);
       } else {
-        setErro(result.error || "Credenciais inválidas");
-        toast.error(result.error || "Credenciais inválidas");
+        const errMsg = 'Credenciais inválidas';
+        setErro(errMsg);
+        toast.error(errMsg);
       }
     } catch {
       setErro("Erro de conexão. Verifique sua internet e tente novamente.");
@@ -262,17 +257,11 @@ export default function Login() {
     setForgotLoading(true);
     setForgotMessage("");
     try {
-      const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: forgotEmail }),
+      await http('/api/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify({ email: forgotEmail })
       });
-      if (response.ok) {
-        setForgotMessage("E-mail de recuperação enviado! Verifique sua caixa de entrada.");
-      } else {
-        const result = await response.json();
-        setForgotMessage(result.error || "Erro ao enviar e-mail. Tente novamente.");
-      }
+      setForgotMessage("E-mail de recuperação enviado! Verifique sua caixa de entrada.");
     } catch {
       setForgotMessage("Erro de conexão. Tente novamente.");
     } finally {

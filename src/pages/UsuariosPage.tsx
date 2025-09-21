@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { API_URL } from '../config/api';
+import { useEffect, useState, useCallback } from "react";
+import { http } from '../config/http';
 
 interface Usuario {
   id: number;
@@ -17,35 +17,27 @@ function UsuariosPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editando, setEditando] = useState<Usuario | null>(null);
   const [form, setForm] = useState<Partial<Usuario & { senha?: string; token?: string }>>({});
-  const schema = localStorage.getItem("schema") || "";
+  const igrejaData = localStorage.getItem('eklesiakonecta_igreja');
+  const schema = (() => { try { return (igrejaData && JSON.parse(igrejaData).schema) || localStorage.getItem('church_schema') || ""; } catch { return localStorage.getItem('church_schema') || ""; } })();
 
-  const fetchUsuarios = () => {
+  const fetchUsuarios = useCallback(() => {
     setLoading(true);
     setErro("");
-    fetch(`${API_URL}/api/usuarios`, { headers: { schema } })
-      .then(res => res.json())
-      .then(data => setUsuarios(data))
+    http('/api/usuarios', { schema })
+      .then(data => setUsuarios(Array.isArray(data) ? data as Usuario[] : []))
       .catch(() => setErro("Erro ao buscar usuários."))
       .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    fetchUsuarios();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [schema]);
+
+  useEffect(() => { fetchUsuarios(); }, [fetchUsuarios]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErro("");
-    const method = editando ? "PUT" : "POST";
-    const url = editando ? `${API_URL}/api/usuarios/${editando.id}` : `${API_URL}/api/usuarios`;
-    fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json", schema },
-      body: JSON.stringify(form)
-    })
-      .then(res => res.json())
+    const method = editando ? 'PUT' : 'POST';
+    const url = editando ? `/api/usuarios/${editando.id}` : `/api/usuarios`;
+    http(url, { method, schema, body: JSON.stringify(form) })
       .then(() => {
         setModalOpen(false);
         setEditando(null);
@@ -59,10 +51,7 @@ function UsuariosPage() {
   const handleDelete = (id: number) => {
     if (!window.confirm("Confirma remover este usuário?")) return;
     setLoading(true);
-    fetch(`${API_URL}/api/usuarios/${id}`, {
-      method: "DELETE",
-      headers: { schema }
-    })
+    http(`/api/usuarios/${id}`, { method: 'DELETE', schema })
       .then(() => fetchUsuarios())
       .catch(() => setErro("Erro ao remover usuário."))
       .finally(() => setLoading(false));

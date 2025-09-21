@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaUser, FaEnvelope, FaLock, FaSpinner, FaCheck, FaChurch } from 'react-icons/fa';
-import { API_URL } from '../config/api';
+import { http } from '../config/http';
 import '../styles/CadastroInicial.scss';
 import Header from '../components/Header';
 import EklesiaLogo from '../assets/EklesiaKonecta.png';
@@ -11,6 +11,9 @@ interface DadosCadastro {
   nomePastor: string;
   emailPastor: string;
   senhaPastor: string;
+  perfilUsuario?: string;
+  perfilUsuarioExtra?: string;
+  slugIgreja?: string;
 }
 
 interface CadastroInicialProps {
@@ -28,7 +31,9 @@ export default function CadastroInicial({ onSuccess }: CadastroInicialProps) {
     nomeIgreja: '',
     nomePastor: '',
     emailPastor: '',
-    senhaPastor: ''
+  senhaPastor: '',
+  perfilUsuario: 'ADMIN',
+  perfilUsuarioExtra: 'SUPERUSER'
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,40 +83,36 @@ export default function CadastroInicial({ onSuccess }: CadastroInicialProps) {
     const inicio = Date.now();
 
     try {
-  console.log('Enviando dados para cadastro:', JSON.stringify({
-    ...dados
-  }));
+      // Normaliza nome para slug simples (backend pode usar para schema)
+      const slug = dados.nomeIgreja
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '_')
+        .substring(0, 40);
+
+      const payload = {
+        ...dados,
+        slugIgreja: slug,
+        perfilUsuario: 'ADMIN',
+        perfilUsuarioExtra: 'SUPERUSER'
+      };
+
+  console.log('Payload cadastro inicial →', payload);
       
-      // Endpoint para CADASTRO (criação de igreja)
-   const response = await fetch(`${API_URL}/api/cadastro-inicial`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(dados),
-});
-      // Capturar o corpo da resposta como texto para diagnóstico
-      const responseText = await response.text();
-      console.log('Resposta completa do servidor:', responseText);
-      
-      // Tentar parsear como JSON
-      let result;
-      try {
-        result = JSON.parse(responseText);
-      } catch (e) {
-        console.error('Erro ao parsear resposta como JSON:', e);
-        setErro(`Resposta inválida do servidor: ${responseText.substring(0, 100)}...`);
-        setInstalando(false);
-        setLoading(false);
-        return;
-      }
+      // Endpoint para CADASTRO (criação de igreja) via http() central
+      const result = await http('/api/cadastro-inicial', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
 
       const tempoRestante = tempoMinimo - (Date.now() - inicio);
       if (tempoRestante > 0) {
         await new Promise(resolve => setTimeout(resolve, tempoRestante));
       }
 
-      if (response.ok) {
+      if (result && result.igreja?.schema) {
         setSucesso(true);
 
         // Garante que o schema retornado do backend seja salvo corretamente
@@ -127,6 +128,8 @@ export default function CadastroInicial({ onSuccess }: CadastroInicialProps) {
           nomePastor: dados.nomePastor,
           emailPastor: dados.emailPastor,
           schema,
+          perfilUsuario: 'ADMIN',
+          perfilUsuarioExtra: 'SUPERUSER',
           sistemaConfigurado: true
         };
         localStorage.setItem('eklesiakonecta_igreja', JSON.stringify(igrejaData));
@@ -144,19 +147,6 @@ export default function CadastroInicial({ onSuccess }: CadastroInicialProps) {
             }
           });
         }, 2000);
-      } else {
-        setInstalando(false);
-        // Tratamento específico para o erro de tabelas
-        if (result.error && result.error.includes('criar tabelas')) {
-          console.error('Erro detalhado do backend:', result);
-          setErro(`${result.error} Possíveis causas: 
-            1. O banco de dados está inacessível
-            2. Problemas de permissão no banco
-            3. O nome da igreja já está em uso
-            Por favor, tente novamente ou entre em contato com o suporte.`);
-        } else {
-          setErro(result.error || 'Erro ao cadastrar igreja');
-        }
       }
     } catch (error) {
       console.error('Erro completo:', error);

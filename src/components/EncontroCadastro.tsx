@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaCalendarPlus, FaCheckCircle, FaInfoCircle } from 'react-icons/fa';
-import { getApiUrl } from '../config/api';
+import { http } from '../config/http';
 import '../styles/EncontroCadastro.scss';
 
 interface EncontroInput {
@@ -26,32 +26,18 @@ export default function EncontroCadastro({ onSuccess }: { onSuccess?: () => void
     setErro('');
     setSucesso(false);
     setLoading(true);
-    const igrejaData = localStorage.getItem('eklesiakonecta_igreja');
-    const schema = igrejaData ? JSON.parse(igrejaData).schema : null;
-    if (!schema) {
-      setErro('Schema da igreja não encontrado. Faça login novamente.');
-      setLoading(false);
-      return;
-    }
     try {
-      const response = await fetch(getApiUrl('/api/encontros'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'schema': schema
-        },
-        body: JSON.stringify(form)
-      });
-      const result = await response.json();
-      if (response.ok) {
+      const result = await http('/api/encontros', { method: 'POST', body: JSON.stringify(form) });
+      if (result) {
         setSucesso(true);
         setForm({ titulo: '', data: '', local: '', descricao: '' });
         if (onSuccess) onSuccess();
       } else {
-        setErro(result.error || 'Erro ao cadastrar encontro.');
+        setErro('Erro ao cadastrar encontro.');
       }
-    } catch {
-      setErro('Erro de conexão. Tente novamente.');
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Erro de conexão. Tente novamente.';
+      setErro(msg);
     } finally {
       setLoading(false);
     }

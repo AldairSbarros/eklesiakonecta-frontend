@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { http, httpDownload } from '../config/http';
 
 const congregacoes = [
   { id: 9, nome: "Congregação 9" },
@@ -9,19 +10,23 @@ const congregacoes = [
 
 const semanas = ["1ª Semana", "2ª Semana", "3ª Semana", "4ª Semana", "5ª Semana"];
 
+type SemanasMap = Record<string, string>;
+type LancamentosCongregacao = { semanas: SemanasMap; comissao: string };
+type LancamentosMap = Record<number, LancamentosCongregacao>;
+
 function LancamentoSemanalPage() {
   const [ano] = useState(2025);
   const [mes] = useState("Maio");
-  const [valores, setValores] = useState(() => {
+  const [valores, setValores] = useState<LancamentosMap>(() => {
     // Tenta carregar do localStorage
     const salvo = localStorage.getItem("lancamentoSemanal");
-    return salvo ? JSON.parse(salvo) : {};
+    return salvo ? JSON.parse(salvo) as LancamentosMap : {};
   });
 
   const handleValorChange = (congId: number, semana: string, valor: string) => {
-    setValores((v: any) => {
+    setValores((v) => {
       const novo = { ...v };
-      if (!novo[congId]) novo[congId] = { semanas: {}, comissao: "0,00" };
+      if (!novo[congId]) novo[congId] = { semanas: {}, comissao: "0,00" } as LancamentosCongregacao;
       novo[congId].semanas[semana] = valor;
       localStorage.setItem("lancamentoSemanal", JSON.stringify(novo));
       return novo;
@@ -29,9 +34,9 @@ function LancamentoSemanalPage() {
   };
 
   const handleComissaoChange = (congId: number, valor: string) => {
-    setValores((v: any) => {
+    setValores((v) => {
       const novo = { ...v };
-      if (!novo[congId]) novo[congId] = { semanas: {}, comissao: "0,00" };
+      if (!novo[congId]) novo[congId] = { semanas: {}, comissao: "0,00" } as LancamentosCongregacao;
       novo[congId].comissao = valor;
       localStorage.setItem("lancamentoSemanal", JSON.stringify(novo));
       return novo;
@@ -102,29 +107,58 @@ function LancamentoSemanalPage() {
     doc.save(`LancamentoSemanal_${mes}_${ano}.pdf`);
   };
 
-  // Backend: buscar/salvar lançamentos
-  // Exemplo de fetch (ajuste endpoint conforme backend):
-  // useEffect(() => {
-  //   fetch(`/api/lancamento-semanal?mes=${mes}&ano=${ano}`)
-  //     .then(res => res.json())
-  //     .then(data => setValores(data));
-  // }, [mes, ano]);
+  // Backend: buscar/salvar lançamentos (se disponível)
+  useEffect(() => {
+    (async () => {
+      try {
+        const igrejaData = localStorage.getItem('eklesiakonecta_igreja');
+        const schema = igrejaData ? JSON.parse(igrejaData).schema : null;
+        if (!schema) return;
+  const data = await http(`/api/financeiro/lancamentos-semanais?mes=${mes}&ano=${ano}`, { schema });
+  if (data) setValores(data as LancamentosMap);
+      } catch { /* ignore */ }
+    })();
+  }, [mes, ano]);
 
-  // const salvarBackend = () => {
-  //   fetch(`/api/lancamento-semanal`, {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({ mes, ano, valores })
-  //   });
-  // };
+  const salvarBackend = async () => {
+    try {
+      const igrejaData = localStorage.getItem('eklesiakonecta_igreja');
+      const schema = igrejaData ? JSON.parse(igrejaData).schema : null;
+      if (!schema) return;
+      await http('/api/financeiro/lancamentos-semanais', {
+        method: 'POST',
+        schema,
+        body: JSON.stringify({ mes, ano, valores })
+      });
+      alert('Lançamentos salvos!');
+    } catch {
+      alert('Erro ao salvar no backend');
+    }
+  };
+
+  const exportExcelBackend = async () => {
+    const igrejaData = localStorage.getItem('eklesiakonecta_igreja');
+    const schema = igrejaData ? JSON.parse(igrejaData).schema : null;
+    if (!schema) return;
+    await httpDownload(`/api/financeiro/contribuicoes-mensais/excel?mes=${mes}&ano=${ano}`, `Contribuicoes_${mes}_${ano}.xlsx`, { schema });
+  };
+
+  const exportPDFBackend = async () => {
+    const igrejaData = localStorage.getItem('eklesiakonecta_igreja');
+    const schema = igrejaData ? JSON.parse(igrejaData).schema : null;
+    if (!schema) return;
+    await httpDownload(`/api/manual-lancamentos/lancamentos/relatorios/semanal/pdf?mes=${mes}&ano=${ano}`, `LancamentoSemanal_${mes}_${ano}.pdf`, { schema });
+  };
 
   return (
     <div className="lancamento-semanal-page" style={{maxWidth:500,margin:"0 auto",background:"#fff",padding:24,borderRadius:8,boxShadow:"0 2px 8px #0001"}}>
       <h2 style={{textAlign:"center"}}>{mes} de {ano}</h2>
       <div style={{display:'flex',gap:12,justifyContent:'center',marginBottom:16}}>
-        <button onClick={exportExcel} style={{background:'#2196f3',color:'#fff',border:'none',borderRadius:6,padding:'6px 16px',fontWeight:600}}>Exportar Excel</button>
-        <button onClick={exportPDF} style={{background:'#43a047',color:'#fff',border:'none',borderRadius:6,padding:'6px 16px',fontWeight:600}}>Exportar PDF</button>
-        {/* <button onClick={salvarBackend} style={{background:'#ffa000',color:'#fff',border:'none',borderRadius:6,padding:'6px 16px',fontWeight:600}}>Salvar no Backend</button> */}
+  <button onClick={exportExcel} style={{background:'#2196f3',color:'#fff',border:'none',borderRadius:6,padding:'6px 16px',fontWeight:600}}>Exportar Excel (local)</button>
+  <button onClick={exportPDF} style={{background:'#43a047',color:'#fff',border:'none',borderRadius:6,padding:'6px 16px',fontWeight:600}}>Exportar PDF (local)</button>
+  <button onClick={exportExcelBackend} style={{background:'#1976d2',color:'#fff',border:'none',borderRadius:6,padding:'6px 16px',fontWeight:600}}>Excel do Backend</button>
+  <button onClick={exportPDFBackend} style={{background:'#2e7d32',color:'#fff',border:'none',borderRadius:6,padding:'6px 16px',fontWeight:600}}>PDF do Backend</button>
+  <button onClick={salvarBackend} style={{background:'#ffa000',color:'#fff',border:'none',borderRadius:6,padding:'6px 16px',fontWeight:600}}>Salvar no Backend</button>
       </div>
       {congregacoes.map(c => (
         <div key={c.id} style={{marginBottom:32,borderBottom:"1px solid #eee",paddingBottom:16}}>

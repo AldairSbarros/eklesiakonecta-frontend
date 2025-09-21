@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getApiUrl } from '../config/api';
+import { http } from '../config/http';
 import '../styles/FaturaCadastro.scss';
 
 interface Fatura {
@@ -37,15 +37,8 @@ export default function FaturaCadastro() {
       return;
     }
     try {
-      const response = await fetch(getApiUrl('/api/faturas'), {
-        headers: { 'schema': schema }
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setFaturas(Array.isArray(data) ? data : []);
-      } else {
-        setErro(data.error || 'Erro ao buscar faturas.');
-      }
+      const data = await http('/api/faturas', { schema });
+      setFaturas(Array.isArray(data) ? (data as Fatura[]) : []);
     } catch {
       setErro('Erro de conexão.');
     } finally {
@@ -75,34 +68,16 @@ export default function FaturaCadastro() {
       return;
     }
     try {
-      let response;
       if (editId) {
-        response = await fetch(getApiUrl(`/api/faturas/${editId}`), {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'schema': schema
-          },
-          body: JSON.stringify(form)
-        });
+        await http(`/api/faturas/${editId}`, { method: 'PUT', schema, body: JSON.stringify(form) });
       } else {
-        response = await fetch(getApiUrl('/api/faturas'), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'schema': schema
-          },
-          body: JSON.stringify(form)
-        });
+        await http('/api/faturas', { method: 'POST', schema, body: JSON.stringify(form) });
       }
-      const result = await response.json();
-      if (response.ok) {
+      {
         setSucesso(true);
         setForm({ descricao: '', valor: '', vencimento: '', status: 'PENDENTE' });
         setEditId(null);
         fetchFaturas();
-      } else {
-        setErro(result.error || 'Erro ao salvar fatura.');
       }
     } catch {
       setErro('Erro de conexão.');
@@ -136,15 +111,8 @@ export default function FaturaCadastro() {
       return;
     }
     try {
-      const response = await fetch(getApiUrl(`/api/faturas/${id}`), {
-        method: 'DELETE',
-        headers: { 'schema': schema }
-      });
-      if (response.ok) {
-        fetchFaturas();
-      } else {
-        setErro('Erro ao excluir fatura.');
-      }
+      await http(`/api/faturas/${id}`, { method: 'DELETE', schema });
+      fetchFaturas();
     } catch {
       setErro('Erro de conexão.');
     } finally {

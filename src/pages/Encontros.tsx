@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import EncontroCadastro from '../components/EncontroCadastro';
-import { API_URL } from '../config/api';
+import { http } from '../config/http';
 import '../styles/Encontros.scss';
 
 interface Encontro {
@@ -16,36 +16,21 @@ export default function Encontros() {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
 
-  const fetchEncontros = async () => {
+  const fetchEncontros = useCallback(async () => {
     setLoading(true);
     setErro('');
-    const igrejaData = localStorage.getItem('eklesiakonecta_igreja');
-    const schema = igrejaData ? JSON.parse(igrejaData).schema : null;
-    if (!schema) {
-      setErro('Schema da igreja não encontrado. Faça login novamente.');
-      setLoading(false);
-      return;
-    }
     try {
-      const response = await fetch(`${API_URL}/api/encontros`, {
-        headers: { 'schema': schema }
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setEncontros(Array.isArray(data) ? data : []);
-      } else {
-        setErro(data.error || 'Erro ao buscar encontros.');
-      }
-    } catch {
-      setErro('Erro de conexão.');
+      const data = await http('/api/encontros');
+      setEncontros(Array.isArray(data) ? (data as Encontro[]) : []);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar encontros.';
+      setErro(msg);
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchEncontros();
   }, []);
+
+  useEffect(() => { fetchEncontros(); }, [fetchEncontros]);
 
   return (
     <div className="encontros-page">

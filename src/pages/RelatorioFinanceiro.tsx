@@ -1,23 +1,25 @@
 import { useEffect, useState } from "react";
-
-import { API_URL } from '../config/api';
+import { http, httpDownload } from '../config/http';
+import { EXPORTS } from '../config/exports';
 
 function RelatorioFinanceiro() {
   type RelatorioFinanceiroData = Record<string, unknown>; // Adjust this type as needed for your data shape
   const [dados, setDados] = useState<RelatorioFinanceiroData | null>(null);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
-  const schema = localStorage.getItem("schema") || "";
+  const igrejaData = localStorage.getItem('eklesiakonecta_igreja');
+  const schema = (() => {
+    try { return (igrejaData && JSON.parse(igrejaData).schema) || localStorage.getItem('church_schema') || ""; } catch { return localStorage.getItem('church_schema') || ""; }
+  })();
 
   useEffect(() => {
     setLoading(true);
     setErro("");
-    fetch(`${API_URL}/api/relatorio-financeiro`, { headers: { schema } })
-      .then(res => res.json())
-      .then(data => setDados(data))
+    http('/api/relatorio-financeiro', { schema })
+      .then(data => setDados(data as RelatorioFinanceiroData))
       .catch(() => setErro("Erro ao buscar relatório financeiro."))
       .finally(() => setLoading(false));
-  }, []);
+  }, [schema]);
 
   // Renderização evoluída: tabela se dados forem array, senão JSON
   const renderTable = () => {
@@ -49,6 +51,14 @@ function RelatorioFinanceiro() {
   return (
     <div className="relatorio-financeiro">
       <h2>Relatório Financeiro</h2>
+      <div style={{display:'flex', gap:8, margin:'8px 0'}}>
+        <button onClick={() => httpDownload(EXPORTS.relatorioFinanceiro.excel, 'RelatorioFinanceiro.xlsx')}>
+          Exportar Excel
+        </button>
+        <button onClick={() => httpDownload(EXPORTS.relatorioFinanceiro.pdf, 'RelatorioFinanceiro.pdf')}>
+          Exportar PDF
+        </button>
+      </div>
       {loading && <p>Carregando...</p>}
       {erro && <p style={{color:'red'}}>{erro}</p>}
       {!loading && renderTable()}

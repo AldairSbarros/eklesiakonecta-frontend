@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
-import { getApiUrl } from '../config/api';
+import { http, httpDownload } from '../config/http';
+import { EXPORTS } from '../config/exports';
 import '../styles/DashboardFinanceiro.scss';
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
@@ -50,11 +51,8 @@ export default function DashboardFinanceiro() {
       const schema = igrejaData ? JSON.parse(igrejaData).schema : null;
       if (!schema) return;
       try {
-        const response = await fetch(getApiUrl('/api/congregacoes'), {
-          headers: { 'schema': schema }
-        });
-        const data = await response.json();
-        if (response.ok) setCongregacoes(Array.isArray(data) ? data : []);
+  const data = await http('/api/congregacoes', { schema }) as Congregacao[];
+  setCongregacoes(Array.isArray(data) ? data : []);
       } catch {
         // erro silencioso, pode logar se necessário
       }
@@ -124,19 +122,30 @@ export default function DashboardFinanceiro() {
       return;
     }
     try {
-      const url = getApiUrl(`/api/financeiro/resumo?congregacaoId=${congregacaoId}${mes ? `&mes=${mes}` : ''}${ano ? `&ano=${ano}` : ''}`);
-      const response = await fetch(url, { headers: { 'schema': schema } });
-      const data = await response.json();
-      if (response.ok) {
-        setResumo(data);
-      } else {
-        setErro(data.error || 'Erro ao buscar resumo.');
-      }
+      const path = `/api/financeiro/resumo?congregacaoId=${congregacaoId}${mes ? `&mes=${mes}` : ''}${ano ? `&ano=${ano}` : ''}`;
+      const data = await http(path, { schema });
+      setResumo(data as ResumoFinanceiro);
     } catch {
       setErro('Erro de conexão.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleExportExcel = async () => {
+    if (!congregacaoId) return setErro('Selecione a congregação.');
+    const params = new URLSearchParams({ congregacaoId });
+    if (mes) params.set('mes', mes);
+    if (ano) params.set('ano', ano);
+    await httpDownload(`${EXPORTS.resumo.excel}?${params.toString()}`, `ResumoFinanceiro_${congregacaoId}_${mes || 'all'}_${ano || 'all'}.xlsx`);
+  };
+
+  const handleExportPDF = async () => {
+    if (!congregacaoId) return setErro('Selecione a congregação.');
+    const params = new URLSearchParams({ congregacaoId });
+    if (mes) params.set('mes', mes);
+    if (ano) params.set('ano', ano);
+    await httpDownload(`${EXPORTS.resumo.pdf}?${params.toString()}`, `ResumoFinanceiro_${congregacaoId}_${mes || 'all'}_${ano || 'all'}.pdf`);
   };
 
   return (
@@ -163,6 +172,8 @@ export default function DashboardFinanceiro() {
         <button onClick={handleBuscarResumo} disabled={loading || !congregacaoId} className="btn-buscar-resumo">
           {loading ? 'Buscando...' : 'Buscar Resumo'}
         </button>
+        <button onClick={handleExportExcel} disabled={!congregacaoId} className="btn-export-excel">Exportar Excel</button>
+        <button onClick={handleExportPDF} disabled={!congregacaoId} className="btn-export-pdf">Exportar PDF</button>
       </div>
       {erro && <div className="erro-message">{erro}</div>}
       {resumo && (

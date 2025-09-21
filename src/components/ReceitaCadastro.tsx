@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import "./ReceitaCadastro.scss";
 
@@ -12,7 +11,7 @@ interface Receita {
   origem: string;
 }
 
-import { API_URL } from '../config/api';
+import { http } from '../config/http';
 
 function ReceitaCadastro() {
   const [receitas, setReceitas] = useState<Receita[]>([]);
@@ -22,23 +21,21 @@ function ReceitaCadastro() {
   const [categoria, setCategoria] = useState("");
   const [origem, setOrigem] = useState("");
   const [loading, setLoading] = useState(false);
-  const schema = localStorage.getItem("schema") || "";
 
-  useEffect(() => {
-    fetchReceitas();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const fetchReceitas = async () => {
+  const fetchReceitas = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/api/receita`, { headers: { schema } });
-      setReceitas(res.data);
+      const data = await http('/api/receita');
+      setReceitas(Array.isArray(data) ? data as Receita[] : []);
     } catch {
       toast.error("Erro ao buscar receitas");
     }
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchReceitas();
+  }, [fetchReceitas]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,11 +43,10 @@ function ReceitaCadastro() {
       return toast.error("Preencha todos os campos!");
     setLoading(true);
     try {
-      await axios.post(
-        `${API_URL}/api/receita`,
-        { valor, data, descricao, categoria, origem },
-        { headers: { schema } }
-      );
+      await http('/api/receita', {
+        method: 'POST',
+        body: JSON.stringify({ valor, data, descricao, categoria, origem })
+      });
       toast.success("Receita cadastrada!");
       setValor(0);
       setData("");
@@ -68,7 +64,7 @@ function ReceitaCadastro() {
     if (!window.confirm("Remover receita?")) return;
     setLoading(true);
     try {
-      await axios.delete(`${API_URL}/api/receita/${id}`, { headers: { schema } });
+      await http(`/api/receita/${id}`, { method: 'DELETE' });
       toast.success("Receita removida");
       fetchReceitas();
     } catch {

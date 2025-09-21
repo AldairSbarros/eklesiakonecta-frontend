@@ -7,9 +7,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://api.eklesia.app.br:3001',
+        target: 'https://api.eklesia.app.br',
         changeOrigin: true,
-        secure: false,
+        secure: true,
         configure: (proxy) => {
           proxy.on('error', (err) => {
             console.log('Erro de proxy:', err);

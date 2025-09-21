@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { http } from '../config/http';
 
 interface Usuario {
   id: number;
@@ -19,23 +20,17 @@ const PermissaoCadastro: React.FC = () => {
   const [permissoes, setPermissoes] = useState<Permissao[]>([]);
   const [form, setForm] = useState<Permissao>({ nome: '', descricao: '' });
   const [editId, setEditId] = useState<number | null>(null);
-  const schema = localStorage.getItem('eklesiakonecta_schema') || '';
-
   // Listar permissões
-  const fetchPermissoes = async () => {
+  const fetchPermissoes = useCallback(async () => {
     try {
-      const res = await fetch('/api/permissoes', {
-        headers: { schema }
-      });
-      const data = await res.json();
-      if (res.ok) setPermissoes(data);
-      else toast.error(data.error || 'Erro ao listar permissões');
+      const data = await http('/api/permissoes');
+      setPermissoes(Array.isArray(data) ? data as Permissao[] : []);
     } catch {
-      toast.error('Erro de conexão');
+      toast.error('Erro ao listar permissões');
     }
-  };
+  }, []);
 
-  useEffect(() => { fetchPermissoes(); }, []);
+  useEffect(() => { fetchPermissoes(); }, [fetchPermissoes]);
 
   // Criar ou atualizar permissão
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,20 +38,15 @@ const PermissaoCadastro: React.FC = () => {
     try {
       const url = editId ? `/api/permissoes/${editId}` : '/api/permissoes';
       const method = editId ? 'PUT' : 'POST';
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json', schema },
-        body: JSON.stringify(form)
-      });
-      const data = await res.json();
-      if (res.ok) {
+      await http(url, { method, body: JSON.stringify(form) });
+      {
         toast.success(editId ? 'Permissão atualizada!' : 'Permissão cadastrada!');
         setForm({ nome: '', descricao: '' });
         setEditId(null);
         fetchPermissoes();
-      } else toast.error(data.error || 'Erro ao salvar');
+      }
     } catch {
-      toast.error('Erro de conexão');
+      toast.error('Erro ao salvar permissão');
     }
   };
 
@@ -70,17 +60,11 @@ const PermissaoCadastro: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (!window.confirm('Confirma remover?')) return;
     try {
-      const res = await fetch(`/api/permissoes/${id}`, {
-        method: 'DELETE',
-        headers: { schema }
-      });
-      const data = await res.json();
-      if (res.ok) {
+      await http(`/api/permissoes/${id}`, { method: 'DELETE' });
         toast.success('Removido com sucesso!');
         fetchPermissoes();
-      } else toast.error(data.error || 'Erro ao remover');
     } catch {
-      toast.error('Erro de conexão');
+      toast.error('Erro ao remover permissão');
     }
   };
 

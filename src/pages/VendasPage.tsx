@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { API_URL } from '../config/api';
+import { useEffect, useState, useCallback } from "react";
+import { http } from '../config/http';
 
 interface Venda {
   id: number;
@@ -30,35 +30,27 @@ function VendasPage() {
   const [faturaModal, setFaturaModal] = useState<{ vendaId: number, faturas: Fatura[] } | null>(null);
   const [novaFatura, setNovaFatura] = useState<Partial<Fatura>>({});
   const [faturaLoading, setFaturaLoading] = useState(false);
-  const schema = localStorage.getItem("schema") || "";
+  const igrejaData = localStorage.getItem('eklesiakonecta_igreja');
+  const schema = (() => { try { return (igrejaData && JSON.parse(igrejaData).schema) || localStorage.getItem('church_schema') || ""; } catch { return localStorage.getItem('church_schema') || ""; } })();
 
-  const fetchVendas = () => {
+  const fetchVendas = useCallback(() => {
     setLoading(true);
     setErro("");
-    fetch(`${API_URL}/api/vendas`, { headers: { schema } })
-      .then(res => res.json())
-      .then(data => setVendas(data))
+    http('/api/vendas', { schema })
+      .then(data => setVendas(Array.isArray(data) ? data as Venda[] : []))
       .catch(() => setErro("Erro ao buscar vendas."))
       .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    fetchVendas();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [schema]);
+
+  useEffect(() => { fetchVendas(); }, [fetchVendas]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErro("");
-    const method = editando ? "PUT" : "POST";
-    const url = editando ? `${API_URL}/api/vendas/${editando.id}` : `${API_URL}/api/vendas`;
-    fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json", schema },
-      body: JSON.stringify(form)
-    })
-      .then(res => res.json())
+    const method = editando ? 'PUT' : 'POST';
+    const url = editando ? `/api/vendas/${editando.id}` : `/api/vendas`;
+    http(url, { method, schema, body: JSON.stringify(form) })
       .then(() => {
         setModalOpen(false);
         setEditando(null);
@@ -72,10 +64,7 @@ function VendasPage() {
   const handleDelete = (id: number) => {
     if (!window.confirm("Confirma remover esta venda?")) return;
     setLoading(true);
-    fetch(`${API_URL}/api/vendas/${id}`, {
-      method: "DELETE",
-      headers: { schema }
-    })
+    http(`/api/vendas/${id}`, { method: 'DELETE', schema })
       .then(() => fetchVendas())
       .catch(() => setErro("Erro ao remover venda."))
       .finally(() => setLoading(false));
@@ -166,11 +155,7 @@ function VendasPage() {
           <form onSubmit={async e => {
             e.preventDefault();
             setFaturaLoading(true);
-            await fetch(`${API_URL}/api/vendas/${faturaModal.vendaId}/faturas`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', schema },
-              body: JSON.stringify(novaFatura)
-            });
+            await http(`/api/vendas/${faturaModal.vendaId}/faturas`, { method: 'POST', schema, body: JSON.stringify(novaFatura) });
             setNovaFatura({});
             setFaturaLoading(false);
             fetchVendas();

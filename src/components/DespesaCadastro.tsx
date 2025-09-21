@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FaPlus, FaTrash, FaInfoCircle } from 'react-icons/fa';
-import { getApiUrl } from '../config/api';
+import { http } from '../config/http';
 import '../styles/DespesaCadastro.scss';
 
 interface DespesaInput {
@@ -58,31 +58,17 @@ export default function DespesaCadastro() {
     setErro('');
     setSucesso(false);
     setLoading(true);
-    const igrejaData = localStorage.getItem('eklesiakonecta_igreja');
-    const schema = igrejaData ? JSON.parse(igrejaData).schema : null;
-    if (!schema) {
-      setErro('Schema da igreja não encontrado. Faça login novamente.');
-      setLoading(false);
-      return;
-    }
     try {
-      const response = await fetch(getApiUrl('/api/despesas'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'schema': schema
-        },
-        body: JSON.stringify({ despesas })
-      });
-      const result = await response.json();
-      if (response.ok) {
+      const result = await http('/api/despesas', { method: 'POST', body: JSON.stringify({ despesas }) });
+      if (result) {
         setSucesso(true);
         setDespesas([{ codigo: '', descricao: '', valor: '' }]);
       } else {
-        setErro(result.error || 'Erro ao cadastrar despesas.');
+        setErro('Erro ao cadastrar despesas.');
       }
-    } catch {
-      setErro('Erro de conexão. Tente novamente.');
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Erro de conexão. Tente novamente.';
+      setErro(msg);
     } finally {
       setLoading(false);
     }

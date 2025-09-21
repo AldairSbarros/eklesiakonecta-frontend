@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { API_URL } from '../config/api';
+import { useEffect, useState, useCallback } from "react";
+import { http } from '../config/http';
 
 interface Visitante {
   id: number;
@@ -16,35 +16,27 @@ function VisitantesCultoPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editando, setEditando] = useState<Visitante | null>(null);
   const [form, setForm] = useState<Partial<Visitante>>({});
-  const schema = localStorage.getItem("schema") || "";
+  const igrejaData = localStorage.getItem('eklesiakonecta_igreja');
+  const schema = (() => { try { return (igrejaData && JSON.parse(igrejaData).schema) || localStorage.getItem('church_schema') || ""; } catch { return localStorage.getItem('church_schema') || ""; } })();
 
-  const fetchVisitantes = () => {
+  const fetchVisitantes = useCallback(() => {
     setLoading(true);
     setErro("");
-    fetch(`${API_URL}/api/visitantes-culto`, { headers: { schema } })
-      .then(res => res.json())
-      .then(data => setVisitantes(data))
+    http('/api/visitantes-culto', { schema })
+      .then(data => setVisitantes(Array.isArray(data) ? data as Visitante[] : []))
       .catch(() => setErro("Erro ao buscar visitantes."))
       .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    fetchVisitantes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [schema]);
+
+  useEffect(() => { fetchVisitantes(); }, [fetchVisitantes]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErro("");
-    const method = editando ? "PUT" : "POST";
-    const url = editando ? `${API_URL}/api/visitantes-culto/${editando.id}` : `${API_URL}/api/visitantes-culto`;
-    fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json", schema },
-      body: JSON.stringify(form)
-    })
-      .then(res => res.json())
+    const method = editando ? 'PUT' : 'POST';
+    const url = editando ? `/api/visitantes-culto/${editando.id}` : `/api/visitantes-culto`;
+    http(url, { method, schema, body: JSON.stringify(form) })
       .then(() => {
         setModalOpen(false);
         setEditando(null);
@@ -58,10 +50,7 @@ function VisitantesCultoPage() {
   const handleDelete = (id: number) => {
     if (!window.confirm("Confirma remover este visitante?")) return;
     setLoading(true);
-    fetch(`${API_URL}/api/visitantes-culto/${id}`, {
-      method: "DELETE",
-      headers: { schema }
-    })
+    http(`/api/visitantes-culto/${id}`, { method: 'DELETE', schema })
       .then(() => fetchVisitantes())
       .catch(() => setErro("Erro ao remover visitante."))
       .finally(() => setLoading(false));
