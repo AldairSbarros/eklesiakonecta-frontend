@@ -17,6 +17,7 @@ interface MemberLoginProps {
 export default function MemberLogin({ onSuccess }: MemberLoginProps) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [schema, setSchema] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,10 +26,13 @@ export default function MemberLogin({ onSuccess }: MemberLoginProps) {
     e.preventDefault();
     setErro('');
     setLoading(true);
-    const igrejaData = localStorage.getItem('eklesiakonecta_igreja');
-    const schema = igrejaData ? JSON.parse(igrejaData).schema : null;
-    if (!schema) {
-      setErro('Schema da igreja não encontrado. Faça login administrativo primeiro.');
+    let schemaValue = schema;
+    if (!schemaValue) {
+      const igrejaData = localStorage.getItem('eklesiakonecta_igreja');
+      schemaValue = igrejaData ? JSON.parse(igrejaData).schema : '';
+    }
+    if (!schemaValue) {
+      setErro('Informe o schema da igreja ou faça login administrativo primeiro.');
       setLoading(false);
       return;
     }
@@ -37,7 +41,7 @@ export default function MemberLogin({ onSuccess }: MemberLoginProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'schema': schema
+          'schema': schemaValue
         },
         body: JSON.stringify({ email, senha })
       });
@@ -90,6 +94,18 @@ export default function MemberLogin({ onSuccess }: MemberLoginProps) {
               {showPass ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
+        </div>
+        <div className="form-group">
+          <label htmlFor="schema">Schema (opcional)</label>
+          <input
+            type="text"
+            id="schema"
+            name="schema"
+            value={schema}
+            onChange={e => setSchema(e.target.value)}
+            disabled={loading}
+            placeholder="Informe o schema se necessário"
+          />
         </div>
         {erro && <div className="erro-message"><FaInfoCircle style={{marginRight: 4}}/>{erro}</div>}
         <button type="submit" disabled={loading} className="btn-member-login">

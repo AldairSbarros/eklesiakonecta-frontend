@@ -31,9 +31,9 @@ export default function CadastroInicial({ onSuccess }: CadastroInicialProps) {
     nomeIgreja: '',
     nomePastor: '',
     emailPastor: '',
-  senhaPastor: '',
-  perfilUsuario: 'ADMIN',
-  perfilUsuarioExtra: 'SUPERUSER'
+    senhaPastor: '',
+    perfilUsuario: 'ADMIN',
+    perfilUsuarioExtra: 'SUPERUSER'
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,8 +114,7 @@ export default function CadastroInicial({ onSuccess }: CadastroInicialProps) {
 
       if (result && result.igreja?.schema) {
         setSucesso(true);
-
-        // Garante que o schema retornado do backend seja salvo corretamente
+        // Salva schema e dados da igreja normalmente
         const schema = result.igreja?.schema;
         if (!schema) {
           setErro('Erro ao cadastrar: schema não retornado pelo backend.');
@@ -136,7 +135,7 @@ export default function CadastroInicial({ onSuccess }: CadastroInicialProps) {
         if (onSuccess) {
           onSuccess();
         }
-
+        // Redireciona direto para tela de login comum
         setTimeout(() => {
           navigate('/login', {
             state: {
