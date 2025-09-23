@@ -1,122 +1,205 @@
-.landing {
+
+.landing-page-apresentacao {
   min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family: 'Segoe UI', Arial, sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  font-family: 'Segoe UI', Arial, sans-serif;
-  position: relative;
+  justify-content: flex-start;
+  padding-bottom: 60px;
 
-  main {
+  .lp-header {
+    text-align: center;
+    margin-top: 48px;
+    margin-bottom: 32px;
+    .lp-logo {
+      width: 120px;
+      margin-bottom: 16px;
+      animation: logoGlow 3s ease-in-out infinite;
+    }
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: #1d4ed8;
+      margin-bottom: 8px;
+    }
+    h2 {
+      font-size: 1.4rem;
+      color: #374151;
+      font-weight: 400;
+      margin-bottom: 0;
+    }
+  }
+
+  .lp-main {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 32px;
     align-items: center;
+  }
 
-    .btn-cadastro, .btn-login {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 1rem 2rem;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.2rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      min-width: 250px;
-      justify-content: center;
+  .lp-beneficios {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(59,130,246,0.08);
+    padding: 32px 24px;
+    width: 100%;
+    h3 {
+      font-size: 1.3rem;
+      color: #1d4ed8;
+      margin-bottom: 16px;
     }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      li {
+        font-size: 1.1rem;
+        color: #374151;
+        margin-bottom: 10px;
+        padding-left: 0.5em;
+        position: relative;
+        &:before {
+          content: '✔';
+          color: #3b82f6;
+          font-size: 1.1em;
+          margin-right: 8px;
+        }
+      }
+    }
+  }
 
-    .btn-cadastro {
+  .lp-recursos {
+    width: 100%;
+    .lp-features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 24px;
+      margin-top: 16px;
+    }
+    .lp-feature {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(59,130,246,0.07);
+      padding: 18px 10px;
+      text-align: center;
+      font-size: 1.1rem;
+      color: #1d4ed8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      span {
+        font-size: 2.2rem;
+        margin-bottom: 8px;
+      }
+      p {
+        margin: 0;
+        color: #374151;
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .lp-cta {
+    text-align: center;
+    margin-top: 24px;
+    h3 {
+      font-size: 1.2rem;
+      color: #1d4ed8;
+      margin-bottom: 18px;
+    }
+    .lp-btn-cadastro {
       background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
       color: #fff;
-      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
-
+      font-size: 1.2rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      padding: 1rem 2.2rem;
+      margin-bottom: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(59,130,246,0.18);
+      transition: all 0.3s;
       &:hover {
         background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        box-shadow: 0 6px 20px rgba(59,130,246,0.28);
       }
     }
-
-    .btn-login {
-      background: rgba(255, 255, 255, 0.9);
+    .lp-btn-login {
+      display: inline-block;
+      background: #fff;
       color: #3b82f6;
       border: 2px solid #3b82f6;
-      backdrop-filter: blur(10px);
-
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 0.8rem 2rem;
+      margin-left: 10px;
+      text-decoration: none;
+      transition: all 0.3s;
       &:hover {
-        background: rgba(255, 255, 255, 1);
+        background: #f3f4f6;
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.2);
+        box-shadow: 0 6px 20px rgba(59,130,246,0.12);
       }
     }
   }
 
-  .landing-footer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 1.5rem;
+  .lp-depoimento {
+    background: #f3f4f6;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(59,130,246,0.07);
+    padding: 24px 18px;
+    width: 100%;
     text-align: center;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-
-    .footer-content {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-bottom: 0.5rem;
-
-      .footer-logo {
-        width: 24px;
-        height: auto;
-        border-radius: 4px;
-        animation: logoGlow 3s ease-in-out infinite;
-      }
-
-      .footer-text {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #2d3e50;
-      }
+    blockquote {
+      font-size: 1.1rem;
+      color: #374151;
+      font-style: italic;
+      margin-bottom: 8px;
     }
-
-    .footer-copyright {
-      font-size: 0.8rem;
-      color: #4a6073;
-      margin: 0;
-      opacity: 0.8;
-    }
-
-    @media (max-width: 768px) {
-      padding: 1rem;
-      
-      .footer-content {
-        .footer-text {
-          font-size: 0.8rem;
-        }
-      }
-      
-      .footer-copyright {
-        font-size: 0.7rem;
-      }
+    cite {
+      font-size: 1rem;
+      color: #1d4ed8;
+      font-weight: 500;
     }
   }
 
-  // Animação de brilho para o footer
+  .lp-footer {
+    width: 100%;
+    text-align: center;
+    padding: 24px 0 0 0;
+    color: #4a6073;
+    font-size: 0.95rem;
+    opacity: 0.8;
+  }
+
   @keyframes logoGlow {
     0%, 100% {
       filter: brightness(1) drop-shadow(0 0 3px rgba(59, 130, 246, 0.3));
     }
     50% {
       filter: brightness(1.2) drop-shadow(0 0 8px rgba(59, 130, 246, 0.6));
+    }
+  }
+
+  @media (max-width: 900px) {
+    .lp-main {
+      max-width: 98vw;
+      padding: 0 8px;
+    }
+    .lp-header {
+      h1 {
+        font-size: 2rem;
+      }
+      h2 {
+        font-size: 1.1rem;
+      }
     }
   }
 }
