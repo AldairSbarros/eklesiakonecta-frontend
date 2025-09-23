@@ -10,7 +10,7 @@ import {
   aliancaPlayList1,
 } from "../BibleReader/youtubePlayList";
 
-const API_URL = import.meta.env.VITE_BIBLE_API_URL || "https://4.dbt.io/api";
+const API_URL = import.meta.env.VITE_BIBLE_API_URL;
 const API_KEY = import.meta.env.VITE_BIBLE_API_KEY;
 
 function getBookKey(livro: string) {

@@ -1,17 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
+import * as receitasApi from '../backend/services/receitas.service';
+import type { Receita } from '../types/Receita';
 import "./ReceitaCadastro.scss";
 
-interface Receita {
-  id: number;
-  valor: number;
-  data: string;
-  descricao: string;
-  categoria: string;
-  origem: string;
-}
-
-import { http } from '../config/http';
+// tipo Receita agora centralizado em src/types/Receita
 
 function ReceitaCadastro() {
   const [receitas, setReceitas] = useState<Receita[]>([]);
@@ -25,8 +18,8 @@ function ReceitaCadastro() {
   const fetchReceitas = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await http('/api/receita');
-      setReceitas(Array.isArray(data) ? data as Receita[] : []);
+      const data = await receitasApi.list();
+      setReceitas(Array.isArray(data) ? (data as unknown as Receita[]) : []);
     } catch {
       toast.error("Erro ao buscar receitas");
     }
@@ -43,10 +36,7 @@ function ReceitaCadastro() {
       return toast.error("Preencha todos os campos!");
     setLoading(true);
     try {
-      await http('/api/receita', {
-        method: 'POST',
-        body: JSON.stringify({ valor, data, descricao, categoria, origem })
-      });
+      await receitasApi.create({ valor, data, descricao, categoria, origem });
       toast.success("Receita cadastrada!");
       setValor(0);
       setData("");
@@ -64,7 +54,7 @@ function ReceitaCadastro() {
     if (!window.confirm("Remover receita?")) return;
     setLoading(true);
     try {
-      await http(`/api/receita/${id}`, { method: 'DELETE' });
+      await receitasApi.remove(id);
       toast.success("Receita removida");
       fetchReceitas();
     } catch {
@@ -76,11 +66,11 @@ function ReceitaCadastro() {
   const handleEdit = async (id: number) => {
     const receita = receitas.find(r => r.id === id);
     if (!receita) return;
-    setValor(receita.valor);
-    setData(receita.data);
-    setDescricao(receita.descricao);
-    setCategoria(receita.categoria);
-    setOrigem(receita.origem);
+    setValor(receita.valor ?? 0);
+    setData(receita.data ?? "");
+    setDescricao(receita.descricao ?? "");
+    setCategoria(receita.categoria ?? "");
+    setOrigem(receita.origem ?? "");
     // Remover a receita antiga para evitar duplicidade
     await handleDelete(id);
   };
@@ -105,11 +95,11 @@ function ReceitaCadastro() {
       <div className="receita-list">
         {receitas.map(r => (
           <div key={r.id} className="receita-item">
-            <span><b>Valor:</b> R$ {r.valor.toFixed(2)}</span>
-            <span><b>Data:</b> {r.data}</span>
-            <span><b>Descrição:</b> {r.descricao}</span>
-            <span><b>Categoria:</b> {r.categoria}</span>
-            <span><b>Origem:</b> {r.origem}</span>
+            <span><b>Valor:</b> R$ {Number(r.valor ?? 0).toFixed(2)}</span>
+            <span><b>Data:</b> {r.data ?? '-'}</span>
+            <span><b>Descrição:</b> {r.descricao ?? '-'}</span>
+            <span><b>Categoria:</b> {r.categoria ?? '-'}</span>
+            <span><b>Origem:</b> {r.origem ?? '-'}</span>
             <button onClick={() => handleEdit(r.id)} disabled={loading}>Editar</button>
             <button onClick={() => handleDelete(r.id)} disabled={loading}>Remover</button>
           </div>

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
-import { getApiUrl } from "../config/api";
+// import { getApiUrl } from "../config/api";
 import { toast } from "react-toastify";
+import * as ministerios from "../backend/services/missoes.service";
+import type { MissaoInput as MinisterioInput } from "../backend/services/missoes.service";
 
 
 interface Member {
@@ -8,7 +10,7 @@ interface Member {
   nome: string;
 }
 
-interface Ministerio {
+interface Missao {
   id?: string | number;
   nome?: string;
   descricao?: string;
@@ -20,7 +22,7 @@ interface Ministerio {
 
 interface Props {
   onSave: () => void;
-  ministerio?: Ministerio;
+  ministerio?: Missao;
 }
 
 const MinisterioCadastro: React.FC<Props> = ({ onSave, ministerio }) => {
@@ -49,10 +51,10 @@ const MinisterioCadastro: React.FC<Props> = ({ onSave, ministerio }) => {
   const buscarDados = async () => {
     try {
       const [cgRes, ldRes, mbRes, memRes] = await Promise.all([
-        fetch(getApiUrl("/api/congregacoes"), { headers: { schema } }),
-        fetch(getApiUrl("/api/membros?tipo=lider"), { headers: { schema } }),
-        fetch(getApiUrl("/api/membros"), { headers: { schema } }),
-        fetch(getApiUrl("/api/members"), { headers: { schema } })
+        fetch(`/api/congregacoes`, { headers: { schema } }),
+        fetch(`/api/membros?tipo=lider`, { headers: { schema } }),
+        fetch(`/api/membros`, { headers: { schema } }),
+        fetch(`/api/members`, { headers: { schema } })
       ]);
       setCongregacoes(await cgRes.json());
       setLideres(await ldRes.json());
@@ -67,21 +69,22 @@ const MinisterioCadastro: React.FC<Props> = ({ onSave, ministerio }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const url = ministerio ? `/api/ministerios/${ministerio.id}` : "/api/ministerios";
-      const method = ministerio ? "PUT" : "POST";
-      const res = await fetch(getApiUrl(url), {
-        method,
-        headers: { "Content-Type": "application/json", "schema": schema },
-        body: JSON.stringify(form),
-      });
-      if (res.ok) {
-        toast.success(ministerio ? "Ministério atualizado!" : "Ministério cadastrado!");
-        onSave();
+      const payload: MinisterioInput = {
+        nome: form.nome,
+        descricao: form.descricao,
+        congregacaoId: form.congregacaoId,
+        liderId: form.liderId,
+        membrosIds: form.membrosIds,
+        memberIds: form.memberIds,
+      };
+      if (ministerio?.id) {
+        await ministerios.update(ministerio.id, payload);
       } else {
-        toast.error("Erro ao salvar ministério.");
+        await ministerios.create(payload);
       }
+      { toast.success(ministerio ? "Missão atualizada!" : "Missão cadastrada!"); onSave(); }
     } catch {
-      toast.error("Erro ao salvar ministério.");
+  toast.error("Erro ao salvar missão.");
     } finally {
       setLoading(false);
     }
@@ -91,7 +94,7 @@ const MinisterioCadastro: React.FC<Props> = ({ onSave, ministerio }) => {
     <form onSubmit={handleSubmit} className="ministerio-form card-animado">
       <input
         type="text"
-        placeholder="Nome do ministério"
+        placeholder="Nome da missão"
         value={form.nome}
         onChange={e => setForm(f => ({ ...f, nome: e.target.value }))}
         required
@@ -126,7 +129,7 @@ const MinisterioCadastro: React.FC<Props> = ({ onSave, ministerio }) => {
           <option key={ld.id} value={ld.id}>{ld.nome}</option>
         ))}
       </select>
-      <label>Membros do ministério:</label>
+  <label>Membros da missão:</label>
       <input
         type="text"
         placeholder="Buscar membro..."

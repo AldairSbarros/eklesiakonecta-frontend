@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaSave, FaTimes } from 'react-icons/fa';
 import '../styles/OfertaDizimoForm.scss';
+import * as membrosApi from '../backend/services/membros.service';
+import * as congregacoesApi from '../backend/services/congregacoes.service';
 
 interface OfertaDizimoFormProps {
   editData?: import('../types/OfertaDizimo').OfertaDizimo;
@@ -9,11 +11,18 @@ interface OfertaDizimoFormProps {
 }
 
 const OfertaDizimoForm: React.FC<OfertaDizimoFormProps> = ({ editData, onClose, onSubmit }) => {
-  const [tipo, setTipo] = useState<'oferta' | 'dizimo'>(editData?.tipo || 'oferta');
+  const initialTipo = (editData?.tipo === 'dizimo' ? 'dizimo' : 'oferta') as 'oferta' | 'dizimo';
+  const [tipo, setTipo] = useState<'oferta' | 'dizimo'>(initialTipo);
   const [valor, setValor] = useState(editData?.valor || '');
   const [data, setData] = useState(editData?.data || '');
   const [membro, setMembro] = useState(editData?.membro || '');
+  const [memberId, setMemberId] = useState<number | ''>(editData?.memberId ?? '');
   const [congregacao, setCongregacao] = useState(editData?.congregacao || '');
+  const [congregacaoId, setCongregacaoId] = useState<number | ''>(editData?.congregacaoId ?? (Number(localStorage.getItem('eklesiakonecta_congregacaoId') || 0) || ''));
+  const [membros, setMembros] = useState<membrosApi.MembroLight[]>([]);
+  const [congregacoes, setCongregacoes] = useState<congregacoesApi.CongregacaoLight[]>([]);
+  const [loadingRefs, setLoadingRefs] = useState(true);
+  const [errorRefs, setErrorRefs] = useState<string | null>(null);
   const [observacao, setObservacao] = useState(editData?.observacao || '');
   const [comprovante, setComprovante] = useState<File | null>(null);
 
@@ -32,17 +41,54 @@ const OfertaDizimoForm: React.FC<OfertaDizimoFormProps> = ({ editData, onClose, 
       valor: Number(valor),
       data,
       membro,
+      memberId: typeof memberId === 'number' ? memberId : undefined,
       congregacao,
+      congregacaoId: typeof congregacaoId === 'number' ? congregacaoId : undefined,
       observacao,
-      comprovante: comprovante ? comprovante.name : undefined
+      comprovante: comprovante ? comprovante.name : undefined,
+      comprovanteFile: comprovante || undefined
     };
     onSubmit(formData);
   };
+
+  useEffect(() => {
+    let ignore = false;
+    async function loadRefs() {
+      setLoadingRefs(true);
+      try {
+        const [ms, cs] = await Promise.all([
+          membrosApi.list(),
+          congregacoesApi.list(),
+        ]);
+        if (!ignore) {
+          setMembros(ms);
+          setCongregacoes(cs);
+          // se não há valores definidos, tentar escolher padrões
+          if (!editData) {
+            const savedCongId = Number(localStorage.getItem('eklesiakonecta_congregacaoId') || 0) || '';
+            if (savedCongId && typeof savedCongId === 'number') setCongregacaoId(savedCongId);
+          }
+        }
+      } catch {
+        if (!ignore) setErrorRefs('Falha ao carregar listas de referência');
+      } finally {
+        if (!ignore) setLoadingRefs(false);
+      }
+    }
+    loadRefs();
+    return () => { ignore = true; };
+  }, [editData]);
 
   return (
     <div className="oferta-form-modal">
       <form className="oferta-form" onSubmit={handleSubmit}>
         <h3>{editData ? 'Editar Registro' : 'Nova Oferta/Dízimo'}</h3>
+        {loadingRefs && (
+          <div className="form-hint"><span className="spinner" aria-hidden="true" /> Carregando listas de membros e congregações…</div>
+        )}
+        {errorRefs && (
+          <div className="form-error" role="alert">{errorRefs}</div>
+        )}
         <div className="form-group">
           <label>Tipo:</label>
           <select value={tipo} onChange={e => setTipo(e.target.value as 'oferta' | 'dizimo')}>
@@ -60,11 +106,39 @@ const OfertaDizimoForm: React.FC<OfertaDizimoFormProps> = ({ editData, onClose, 
         </div>
         <div className="form-group">
           <label>Membro:</label>
-          <input type="text" value={membro} onChange={e => setMembro(e.target.value)} required placeholder="Nome do membro" />
+          <select
+            value={memberId || ''}
+            onChange={e => {
+              const id = e.target.value ? Number(e.target.value) : '';
+              setMemberId(id);
+              const m = membros.find(mm => mm.id === id);
+              setMembro(m?.nome || '');
+            }}
+            disabled={loadingRefs}
+          >
+            <option value="">Selecione um membro</option>
+            {membros.map(m => (
+              <option key={m.id} value={m.id}>{m.nome}</option>
+            ))}
+          </select>
         </div>
         <div className="form-group">
           <label>Congregação:</label>
-          <input type="text" value={congregacao} onChange={e => setCongregacao(e.target.value)} required placeholder="Nome da congregação" />
+          <select
+            value={congregacaoId || ''}
+            onChange={e => {
+              const id = e.target.value ? Number(e.target.value) : '';
+              setCongregacaoId(id);
+              const c = congregacoes.find(cc => cc.id === id);
+              setCongregacao(c?.nome || '');
+            }}
+            disabled={loadingRefs}
+          >
+            <option value="">Selecione uma congregação</option>
+            {congregacoes.map(c => (
+              <option key={c.id} value={c.id}>{c.nome}</option>
+            ))}
+          </select>
         </div>
         <div className="form-group">
           <label>Observação:</label>
@@ -76,7 +150,7 @@ const OfertaDizimoForm: React.FC<OfertaDizimoFormProps> = ({ editData, onClose, 
           {comprovante && <span className="file-name">{comprovante.name}</span>}
         </div>
         <div className="form-actions">
-          <button type="submit" className="btn-save"><FaSave /> Salvar</button>
+          <button type="submit" className="btn-save" disabled={loadingRefs}><FaSave /> Salvar</button>
           <button type="button" className="btn-cancel" onClick={onClose}><FaTimes /> Cancelar</button>
         </div>
       </form>

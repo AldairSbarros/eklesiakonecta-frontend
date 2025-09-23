@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 import { FaCalendarPlus, FaCheckCircle, FaInfoCircle } from 'react-icons/fa';
-import { http } from '../config/http';
+import * as encontrosApi from '../backend/services/encontros.service';
+import type { Encontro as EncontroModel } from '../backend/services/encontros.service';
 import '../styles/EncontroCadastro.scss';
 
-interface EncontroInput {
-  titulo: string;
-  data: string;
-  local: string;
-  descricao?: string;
-}
+type EncontroInput = Partial<Omit<EncontroModel, 'id'>>;
 
 export default function EncontroCadastro({ onSuccess }: { onSuccess?: () => void }) {
   const [form, setForm] = useState<EncontroInput>({ titulo: '', data: '', local: '', descricao: '' });
@@ -27,7 +23,7 @@ export default function EncontroCadastro({ onSuccess }: { onSuccess?: () => void
     setSucesso(false);
     setLoading(true);
     try {
-      const result = await http('/api/encontros', { method: 'POST', body: JSON.stringify(form) });
+      const result = await encontrosApi.create(form);
       if (result) {
         setSucesso(true);
         setForm({ titulo: '', data: '', local: '', descricao: '' });
@@ -53,7 +49,7 @@ export default function EncontroCadastro({ onSuccess }: { onSuccess?: () => void
             type="text"
             id="titulo"
             name="titulo"
-            value={form.titulo}
+            value={form.titulo ?? ''}
             onChange={handleInputChange}
             required
             disabled={loading}
@@ -67,7 +63,7 @@ export default function EncontroCadastro({ onSuccess }: { onSuccess?: () => void
               type="date"
               id="data"
               name="data"
-              value={form.data}
+              value={form.data ?? ''}
               onChange={handleInputChange}
               required
               disabled={loading}
@@ -79,7 +75,7 @@ export default function EncontroCadastro({ onSuccess }: { onSuccess?: () => void
               type="text"
               id="local"
               name="local"
-              value={form.local}
+              value={form.local ?? ''}
               onChange={handleInputChange}
               required
               disabled={loading}
@@ -92,7 +88,7 @@ export default function EncontroCadastro({ onSuccess }: { onSuccess?: () => void
           <textarea
             id="descricao"
             name="descricao"
-            value={form.descricao}
+            value={form.descricao ?? ''}
             onChange={handleInputChange}
             disabled={loading}
             placeholder="Descrição do encontro (opcional)"

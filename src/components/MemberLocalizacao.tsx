@@ -1,11 +1,5 @@
 import { useState } from "react";
-
-interface Member {
-  id: number;
-  nome: string;
-  latitude?: number;
-  longitude?: number;
-}
+import type { Member } from "../types/Member";
 
 interface Props {
   member: Member;
@@ -13,8 +7,8 @@ interface Props {
 }
 
 export default function MemberLocalizacao({ member, onUpdate }: Props) {
-  const [latitude, setLatitude] = useState(member.latitude || "");
-  const [longitude, setLongitude] = useState(member.longitude || "");
+  const [latitude, setLatitude] = useState(member.latitude?.toString() || "");
+  const [longitude, setLongitude] = useState(member.longitude?.toString() || "");
   const [erro, setErro] = useState("");
 
   const handleUpdate = () => {
@@ -22,7 +16,9 @@ export default function MemberLocalizacao({ member, onUpdate }: Props) {
       setErro("Latitude e longitude obrigatórios");
       return;
     }
-    onUpdate && onUpdate(Number(latitude), Number(longitude));
+    if (onUpdate) {
+      onUpdate(Number(latitude), Number(longitude));
+    }
   };
 
   const handleGeo = () => {

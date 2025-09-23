@@ -1,15 +1,6 @@
 import { useEffect, useState } from "react";
-import { getApiUrl } from "../config/api";
-
-interface Member {
-  id: number;
-  nome: string;
-  email: string;
-  telefone: string;
-  congregacaoId?: number;
-  latitude?: number;
-  longitude?: number;
-}
+import { http } from "../config/http";
+import type { Member } from "../types/Member";
 
 interface Props {
   onEdit?: (member: Member) => void;
@@ -30,17 +21,19 @@ export default function MemberList({ onEdit, onView }: Props) {
     setLoading(true);
     setErro("");
     try {
-      const igrejaData = localStorage.getItem("eklesiakonecta_igreja");
-      const schema = igrejaData ? JSON.parse(igrejaData).schema : "";
-      const response = await fetch(getApiUrl("/api/members"), {
-        headers: { "schema": schema },
-      });
-      const result = await response.json();
-      if (response.ok) {
-        setMembers(result);
-      } else {
-        setErro(result.error || "Erro ao buscar membros");
-      }
+      const result = await http('/api/membros');
+      type Raw = Partial<Member> & { id?: number; nome?: string };
+      const list: Raw[] = Array.isArray(result) ? result : [];
+      // Garantir shape mínimo para evitar quebras de renderização
+      setMembers(list.map((m) => ({
+        id: m?.id ?? 0,
+        nome: m?.nome ?? '—',
+        email: m?.email ?? '',
+        telefone: m?.telefone ?? '',
+        congregacaoId: m?.congregacaoId,
+        latitude: m?.latitude ?? null,
+        longitude: m?.longitude ?? null,
+      })));
     } catch {
       setErro("Erro de conexão");
     } finally {

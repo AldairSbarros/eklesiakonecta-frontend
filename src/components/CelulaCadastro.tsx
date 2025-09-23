@@ -1,52 +1,64 @@
-import { useState } from 'react';
-import { getApiUrl } from '../config/api';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import * as celulasApi from '../backend/services/celulas.service';
 import '../styles/CelulaCadastro.scss';
 
 interface CelulaCadastroProps {
   onSuccess?: () => void;
+  editing?: boolean;
+  editingCelula?: celulasApi.Celula | null;
+  onCancelEdit?: () => void;
+  onUpdated?: () => void;
 }
 
-export default function CelulaCadastro({ onSuccess }: CelulaCadastroProps) {
+export default function CelulaCadastro({ onSuccess, editing = false, editingCelula = null, onCancelEdit, onUpdated }: CelulaCadastroProps) {
+  const getErrorMessage = (e: unknown): string => {
+    if (e instanceof Error && e.message) return e.message;
+    if (typeof e === 'object' && e !== null && 'message' in e) {
+      const m = (e as Record<string, unknown>).message;
+      if (typeof m === 'string') return m;
+    }
+    return 'Erro ao cadastrar célula.';
+  };
+
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Preenche o formulário quando entrar em modo edição
+  useEffect(() => {
+    if (editing && editingCelula) {
+      setNome(editingCelula.nome || '');
+      setDescricao(editingCelula.descricao || '');
+      setSucesso(false);
+      setErro('');
+    }
+  }, [editing, editingCelula]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro('');
     setSucesso(false);
     setLoading(true);
-
-    const igrejaData = localStorage.getItem('eklesiakonecta_igreja');
-    const schema = igrejaData ? JSON.parse(igrejaData).schema : null;
-    if (!schema) {
-      setErro('Schema da igreja não encontrado. Faça login novamente.');
-      setLoading(false);
-      return;
-    }
-
     try {
-      const response = await fetch(getApiUrl('/api/celulas'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'schema': schema
-        },
-        body: JSON.stringify({ nome, descricao })
-      });
-      const result = await response.json();
-      if (response.ok) {
+      if (editing && editingCelula?.id != null) {
+        await celulasApi.update(editingCelula.id, { nome, descricao });
+        toast.success('Célula atualizada com sucesso!');
+        if (onUpdated) onUpdated();
+      } else {
+        await celulasApi.create({ nome, descricao });
         setSucesso(true);
         setNome('');
         setDescricao('');
+        toast.success('Célula cadastrada com sucesso!');
         if (onSuccess) onSuccess();
-      } else {
-        setErro(result.error || 'Erro ao cadastrar célula.');
       }
-    } catch {
-      setErro('Erro de conexão. Tente novamente.');
+    } catch (e: unknown) {
+      const msg = getErrorMessage(e);
+      setErro(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -54,7 +66,7 @@ export default function CelulaCadastro({ onSuccess }: CelulaCadastroProps) {
 
   return (
     <div className="celula-cadastro-container">
-      <h2>Cadastrar Nova Célula</h2>
+      <h2>{editing ? 'Editar Célula' : 'Cadastrar Nova Célula'}</h2>
       <form onSubmit={handleSubmit} className="celula-cadastro-form">
         <div className="form-group">
           <label htmlFor="nome">Nome da Célula *</label>
@@ -80,10 +92,17 @@ export default function CelulaCadastro({ onSuccess }: CelulaCadastroProps) {
           />
         </div>
         {erro && <div className="erro-message">{erro}</div>}
-        {sucesso && <div className="sucesso-message">Célula cadastrada com sucesso!</div>}
-        <button type="submit" disabled={loading} className="btn-cadastrar-celula">
-          {loading ? 'Cadastrando...' : 'Cadastrar Célula'}
-        </button>
+        {!editing && sucesso && <div className="sucesso-message">Célula cadastrada com sucesso!</div>}
+        <div className="actions" style={{ display: 'flex', gap: 8 }}>
+          <button type="submit" disabled={loading} className="btn-cadastrar-celula">
+            {loading ? (editing ? 'Salvando...' : 'Cadastrando...') : (editing ? 'Salvar Alterações' : 'Cadastrar Célula')}
+          </button>
+          {editing && (
+            <button type="button" disabled={loading} onClick={onCancelEdit} className="btn-cancelar-edicao">
+              Cancelar
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );

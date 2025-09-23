@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 
 import type { OfertaDizimo } from '../types/OfertaDizimo';
+import { mapApiToUi } from '../types/OfertaDizimo';
+import * as offeringApi from '../backend/services/offering.service';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaSearch, FaFilter, FaPlus, FaChartPie, FaMoneyBillWave, FaHeart } from 'react-icons/fa';
@@ -27,31 +29,21 @@ const Ofertas: React.FC = () => {
   const COLORS = ['#ff9a9e', '#ff4b6e'];
 
   useEffect(() => {
-    // Simulação de fetch
-    setTimeout(() => {
-      setRegistros([
-        {
-          id: '1',
-          tipo: 'dizimo',
-          valor: 120,
-          data: '2025-07-10',
-          membro: 'João Silva',
-          congregacao: 'Central',
-          observacao: 'Dízimo mensal',
-          comprovante: 'comprovante1.jpg'
-        },
-        {
-          id: '2',
-          tipo: 'oferta',
-          valor: 50,
-          data: '2025-07-15',
-          membro: 'Maria Souza',
-          congregacao: 'Sul',
-          observacao: 'Oferta especial',
-          comprovante: 'comprovante2.jpg'
-        }
-      ]);
-    }, 600);
+    const carregar = async () => {
+      try {
+        const igrejaData = localStorage.getItem('eklesiakonecta_igreja');
+        const schema = igrejaData ? JSON.parse(igrejaData).schema : null;
+        if (!schema) return; // sem schema, não chama API
+        // Opcionalmente filtrar por congregacao salva
+        const congregacaoIdStr = localStorage.getItem('eklesiakonecta_congregacaoId');
+        const congregacaoId = congregacaoIdStr ? Number(congregacaoIdStr) : undefined;
+        const apiItems = await offeringApi.list({ congregacaoId });
+        setRegistros(apiItems.map(mapApiToUi));
+      } catch {
+        // manter silencioso ou exibir toast
+      }
+    };
+    carregar();
   }, []);
 
   const handleNovoRegistro = () => {
@@ -69,19 +61,72 @@ const Ofertas: React.FC = () => {
     setEditData(null);
   };
 
-  const handleFormSubmit = (novoRegistro: OfertaDizimo) => {
-    // Simulação de POST/PUT
-    setTimeout(() => {
-      if (editData) {
-        setRegistros(registros.map(r => r.id === novoRegistro.id ? novoRegistro : r));
+  const normalizeTipo = (t: string | undefined): 'oferta' | 'dizimo' => {
+    return t === 'dizimo' ? 'dizimo' : 'oferta';
+  };
+
+  const handleFormSubmit = async (novoRegistro: OfertaDizimo) => {
+    try {
+      const congregacaoIdLocal = Number(localStorage.getItem('eklesiakonecta_congregacaoId') || 0) || undefined;
+      const memberId = novoRegistro.memberId;
+      const congregacaoId = novoRegistro.congregacaoId || congregacaoIdLocal;
+      if (!memberId || !congregacaoId) {
+        toast.error('Informe o membro (ID) e a congregação (ID) para salvar.');
+        return;
+      }
+      if (editData && typeof editData.id === 'number') {
+        const updated = await offeringApi.update(editData.id, {
+          type: normalizeTipo(novoRegistro.tipo as string),
+          valor: novoRegistro.valor, // controller aceita camelcase valor
+          data: novoRegistro.data,
+          memberId,
+          congregacaoId,
+          numeroRecibo: novoRegistro.numeroRecibo,
+          service: novoRegistro.service || undefined,
+          receiptPhoto: novoRegistro.comprovante,
+        });
+        if (novoRegistro.comprovanteFile) {
+          try {
+            await offeringApi.uploadReceipt(updated.id, novoRegistro.comprovanteFile);
+            // pegar estado atualizado do backend (inclui receiptPhoto e includes)
+            const fresh = await offeringApi.get(updated.id);
+            setRegistros(registros.map(r => r.id === editData.id ? mapApiToUi(fresh) : r));
+          } catch {
+            setRegistros(registros.map(r => r.id === editData.id ? mapApiToUi(updated) : r));
+          }
+        } else {
+          setRegistros(registros.map(r => r.id === editData.id ? mapApiToUi(updated) : r));
+        }
         toast.success('Registro atualizado com sucesso!');
       } else {
-        setRegistros([...registros, novoRegistro]);
+        const created = await offeringApi.create({
+          valor: novoRegistro.valor,
+          data: novoRegistro.data,
+          memberId,
+          congregacaoId,
+          type: normalizeTipo(novoRegistro.tipo as string),
+          numeroRecibo: novoRegistro.numeroRecibo,
+          service: novoRegistro.service || undefined,
+          receiptPhoto: novoRegistro.comprovante,
+        });
+        if (novoRegistro.comprovanteFile) {
+          try {
+            await offeringApi.uploadReceipt(created.id, novoRegistro.comprovanteFile);
+            const fresh = await offeringApi.get(created.id);
+            setRegistros([...registros, mapApiToUi(fresh)]);
+          } catch {
+            setRegistros([...registros, mapApiToUi(created)]);
+          }
+        } else {
+          setRegistros([...registros, mapApiToUi(created)]);
+        }
         toast.success('Oferta/Dízimo cadastrado com sucesso!');
       }
       setShowForm(false);
       setEditData(null);
-    }, 500);
+    } catch {
+      toast.error('Falha ao salvar oferta/dízimo');
+    }
   };
 
   const registrosFiltrados = registros.filter((r: OfertaDizimo) => {
@@ -148,7 +193,21 @@ const Ofertas: React.FC = () => {
           </div>
         ) : (
           registrosFiltrados.map((registro: OfertaDizimo) => (
-            <OfertaDizimoCard key={registro.id} registro={registro} onEdit={() => handleEdit(registro)} />
+            <OfertaDizimoCard
+              key={registro.id}
+              registro={registro}
+              onEdit={() => handleEdit(registro)}
+              onDownloadReceipt={async (id) => {
+                try { await offeringApi.downloadReceipt(id); } catch { toast.error('Falha ao baixar comprovante'); }
+              }}
+              onDeleteReceipt={async (id) => {
+                try {
+                  await offeringApi.deleteReceipt(id);
+                  setRegistros(prev => prev.map(r => r.id === id ? { ...r, comprovante: undefined } : r));
+                  toast.success('Comprovante excluído');
+                } catch { toast.error('Falha ao excluir comprovante'); }
+              }}
+            />
           ))
         )}
       </section>

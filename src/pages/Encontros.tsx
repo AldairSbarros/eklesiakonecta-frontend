@@ -1,15 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import EncontroCadastro from '../components/EncontroCadastro';
-import { http } from '../config/http';
+import * as encontrosApi from '../backend/services/encontros.service';
+import type { Encontro as EncontroModel } from '../backend/services/encontros.service';
 import '../styles/Encontros.scss';
 
-interface Encontro {
-  id: number;
-  titulo: string;
-  data: string;
-  local: string;
-  descricao?: string;
-}
+type Encontro = EncontroModel;
 
 export default function Encontros() {
   const [encontros, setEncontros] = useState<Encontro[]>([]);
@@ -20,8 +15,8 @@ export default function Encontros() {
     setLoading(true);
     setErro('');
     try {
-      const data = await http('/api/encontros');
-      setEncontros(Array.isArray(data) ? (data as Encontro[]) : []);
+  const data = await encontrosApi.list();
+  setEncontros(Array.isArray(data) ? (data as Encontro[]) : []);
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Erro ao buscar encontros.';
       setErro(msg);
@@ -58,7 +53,7 @@ export default function Encontros() {
               encontros.map(e => (
                 <tr key={e.id}>
                   <td>{e.titulo}</td>
-                  <td>{new Date(e.data).toLocaleDateString()}</td>
+                  <td>{e.data ? new Date(e.data).toLocaleDateString() : '-'}</td>
                   <td>{e.local}</td>
                   <td>{e.descricao}</td>
                 </tr>

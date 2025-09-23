@@ -1,15 +1,6 @@
 import React, { useState } from "react";
-import { getApiUrl } from "../config/api";
-
-interface Member {
-  id?: number;
-  nome: string;
-  email: string;
-  telefone: string;
-  congregacaoId?: number;
-  latitude?: number;
-  longitude?: number;
-}
+import { http } from "../config/http";
+import type { Member, MemberCreateInput, MemberUpdateInput } from "../types/Member";
 
 interface Props {
   member?: Member;
@@ -18,7 +9,7 @@ interface Props {
 }
 
 export default function MemberCadastro({ member, onSave, onCancel }: Props) {
-  const [dados, setDados] = useState<Member>(member || {
+  const [dados, setDados] = useState<MemberCreateInput | MemberUpdateInput>(member || {
     nome: "",
     email: "",
     telefone: "",
@@ -37,26 +28,10 @@ export default function MemberCadastro({ member, onSave, onCancel }: Props) {
     setLoading(true);
     setErro("");
     try {
-      const igrejaData = localStorage.getItem("eklesiakonecta_igreja");
-      const schema = igrejaData ? JSON.parse(igrejaData).schema : "";
-      const url = member?.id
-        ? getApiUrl(`/api/members/${member.id}`)
-        : getApiUrl("/api/members");
-      const method = member?.id ? "PUT" : "POST";
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-          "schema": schema,
-        },
-        body: JSON.stringify(dados),
-      });
-      const result = await response.json();
-      if (response.ok) {
-        onSave && onSave(result);
-      } else {
-        setErro(result.error || "Erro ao salvar membro");
-      }
+    const path = member?.id ? `/api/membros/${member.id}` : '/api/membros';
+    const method = member?.id ? 'PUT' : 'POST';
+    const result = await http(path, { method, body: JSON.stringify(dados) });
+    if (onSave) onSave(result as Member);
     } catch {
       setErro("Erro de conexão");
     } finally {

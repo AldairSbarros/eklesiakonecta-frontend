@@ -1,13 +1,4 @@
-
-interface Member {
-  id: number;
-  nome: string;
-  email: string;
-  telefone: string;
-  congregacaoId?: number;
-  latitude?: number;
-  longitude?: number;
-}
+import type { Member } from "../types/Member";
 
 interface Props {
   member: Member;
